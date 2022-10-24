@@ -56,9 +56,6 @@ def tokenize(line):
             except StopIteration:
                 eof_found = True
 
-            if prev_type == TokenType.UNARY_NEGATIVE:
-                number = '-'+number
-                tokens.pop()
             tokens.append(Token(number, type))
             prev_type = type
 

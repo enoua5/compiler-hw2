@@ -9,8 +9,7 @@ class Nonterminal(Enum):
     TERM = auto()
     TERM_ = auto()
     FACTOR = auto()
-    NUM_VAL = auto()
-    NAME_VAL = auto()
+    FACT_VAL = auto()
     EXPR = auto()
     EXPR_ = auto()
 
@@ -61,18 +60,18 @@ def get_class_productions():
     cfg.add_production(Nonterminal.PROD_, [Terminal.MINUS, Nonterminal.TERM, Nonterminal.PROD_])
     cfg.add_production(Nonterminal.PROD_, [SpecialSymbols.EMPTY])
 
-    cfg.add_production(Nonterminal.TERM, [Nonterminal.FACTOR, Nonterminal.TERM_])
+    cfg.add_production(Nonterminal.TERM, [Nonterminal.FACT_VAL, Nonterminal.TERM_])
 
-    cfg.add_production(Nonterminal.TERM_, [Terminal.MULT, Nonterminal.FACTOR, Nonterminal.TERM_])
-    cfg.add_production(Nonterminal.TERM_, [Terminal.DIV, Nonterminal.FACTOR, Nonterminal.TERM_])
+    cfg.add_production(Nonterminal.TERM_, [Terminal.MULT, Nonterminal.FACT_VAL, Nonterminal.TERM_])
+    cfg.add_production(Nonterminal.TERM_, [Terminal.DIV, Nonterminal.FACT_VAL, Nonterminal.TERM_])
     cfg.add_production(Nonterminal.TERM_, [SpecialSymbols.EMPTY])
+
+    cfg.add_production(Nonterminal.FACT_VAL, [Terminal.NEG, Nonterminal.FACTOR])
+    cfg.add_production(Nonterminal.FACT_VAL, [Nonterminal.FACTOR])
 
     cfg.add_production(Nonterminal.FACTOR, [Terminal.L_PAREN, Nonterminal.EXPR, Terminal.R_PAREN])
     cfg.add_production(Nonterminal.FACTOR, [Terminal.NUMBER])
-    cfg.add_production(Nonterminal.FACTOR, [Nonterminal.NAME_VAL])
-
-    cfg.add_production(Nonterminal.NAME_VAL, [Terminal.NAME])
-    cfg.add_production(Nonterminal.NAME_VAL, [Terminal.NEG, Terminal.NAME])
+    cfg.add_production(Nonterminal.FACTOR, [Terminal.NAME])
 
     return cfg
 
