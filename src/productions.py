@@ -1,6 +1,3 @@
-from enum import Enum, auto
-from tokenize import Token
-from src.token import Token, TokenType
 from src.token_enums import *
 
 class CFG_rhs:
