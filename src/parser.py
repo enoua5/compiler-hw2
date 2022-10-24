@@ -2,13 +2,9 @@ from src.productions import SpecialSymbols, Terminal, Nonterminal, get_table
 
 LOOKAHEAD, PROD = get_table()
 
-def verify_valid(line):
-    word_iter = iter(line)
+def verify_valid(word_iter):
     # word ← NextWord( );
-    try:
-        word = Terminal(next(word_iter))
-    except StopIteration:
-        word = SpecialSymbols.EOF
+    word = next(word_iter)
     # push eof onto Stack;
     stack = []
     stack.append(SpecialSymbols.EOF)
@@ -29,10 +25,7 @@ def verify_valid(line):
                 # pop Stack;
                 stack.pop()
                 # word ← NextWord( );
-                try:
-                    word = Terminal(next(word_iter))
-                except StopIteration:
-                    word = SpecialSymbols.EOF
+                word = next(word_iter)
             # else report an error looking for symbol at top of stack;
             else:
                 return False

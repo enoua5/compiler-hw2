@@ -1,37 +1,11 @@
-from enum import Enum, auto
-
-class TokenType(Enum):
-    OPERATOR = auto()
-    NUMBER = auto()
-    NAME = auto()
-    L_PAREN = auto()
-    R_PAREN = auto()
-    UNARY_NEGATIVE = auto()
+from src.token_enums import *
 
 OPERATORS = ['+', '-', '/', '*', '^']
 SUBTRACT_AFTER = [TokenType.NUMBER, TokenType.NAME, TokenType.R_PAREN]
 DIGITS = "1234567890"
 NAME_CHARS = DIGITS + '_' + "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    
-class Token:
-    def __init__(self, text, type):
-        self.text = text
-        self.type = type
-
-    def __repr__(self):
-        return self.type.name+": '"+str(self.text)+"'"
-
-    def __eq__(self, other):
-        if self.type != other.type:
-            return False
-        # if text is set to None, we only care if the types match
-        if self.text == None or other.text == None:
-            return True
-        return self.text == other.text
 
 def tokenize(line):
-    tokens = []
-
     # we'll keep track of this to diferentiate negative numbers and subtraction
     prev_type = None
 
@@ -56,7 +30,7 @@ def tokenize(line):
             except StopIteration:
                 eof_found = True
 
-            tokens.append(Token(number, type))
+            yield Terminal(Token(number, type))
             prev_type = type
 
             if eof_found:
@@ -78,7 +52,7 @@ def tokenize(line):
             except StopIteration:
                 eof_found = True
 
-            tokens.append(Token(name, type))
+            yield Terminal(Token(name, type))
             prev_type = type
 
             if eof_found:
@@ -87,26 +61,26 @@ def tokenize(line):
 
         if (c == '-') and (prev_type not in SUBTRACT_AFTER):
             type = TokenType.UNARY_NEGATIVE
-            tokens.append(Token(c, type))
+            yield Terminal(Token(c, type))
             prev_type = type
         # intential if instead of elif, because the lengthy ones move the interator one past their end
         elif c in OPERATORS:
             #print("OP")
             type = TokenType.OPERATOR
-            tokens.append(Token(c, type))
+            yield Terminal(Token(c, type))
             prev_type = type
         elif c == '(':
             #print("PAREN")
             type =  TokenType.L_PAREN
-            tokens.append(Token(c, type))
+            yield Terminal(Token(c, type))
             prev_type = type
         elif c == ')':
             #print("PAREN")
             type =  TokenType.R_PAREN
-            tokens.append(Token(c, type))
+            yield Terminal(Token(c, type))
             prev_type = type
         elif not c.isspace():
             raise SyntaxError("Unexpected character '"+c+"'")
 
 
-    return tokens
+    yield SpecialSymbols.EOF

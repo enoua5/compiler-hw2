@@ -1,29 +1,7 @@
 from enum import Enum, auto
 from tokenize import Token
 from src.token import Token, TokenType
-
-class Nonterminal(Enum):
-    GOAL = auto()
-    PROD = auto()
-    PROD_ = auto()
-    TERM = auto()
-    TERM_ = auto()
-    FACTOR = auto()
-    FACT_VAL = auto()
-    EXPR = auto()
-    EXPR_ = auto()
-
-class Terminal(Enum):
-    EXPON = Token("^", TokenType.OPERATOR)
-    PLUS = Token("+", TokenType.OPERATOR)
-    MINUS = Token("-", TokenType.OPERATOR)
-    MULT = Token("*", TokenType.OPERATOR)
-    DIV = Token("/", TokenType.OPERATOR)
-    NEG = Token(None, TokenType.UNARY_NEGATIVE)
-    L_PAREN = Token(None, TokenType.L_PAREN)
-    R_PAREN = Token(None, TokenType.R_PAREN)
-    NUMBER = Token(None, TokenType.NUMBER)
-    NAME = Token(None, TokenType.NAME)
+from src.token_enums import *
 
 class CFG_rhs:
     def __init__(self, prod_list: list[Terminal|Nonterminal]):
@@ -97,11 +75,6 @@ def get_book_productions():
     cfg.add_production(Nonterminal.FACTOR, [Terminal.NAME])
 
     return cfg
-
-
-class SpecialSymbols(Enum):
-    EOF = auto()
-    EMPTY = auto()
 
 def get_FIRST():
     FIRST = {}
