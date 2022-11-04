@@ -37,6 +37,8 @@ class Token:
         return self.type.name+": '"+str(self.text)+"'"
 
     def __eq__(self, other):
+        if type(self) != type(other):
+            return False
         if self.type != other.type:
             return False
         # if text is set to None, we only care if the types match

@@ -1,9 +1,8 @@
 from src.parser import Node
-from src.token_enums import Terminal, Nonterminal
+from src.token_enums import Terminal, Nonterminal, Token
 
-USELESS_TERMS = [Terminal.L_PAREN, Terminal.R_PAREN]
-RONTS = [Nonterminal.PROD_RONT, Nonterminal.TERM_RONT, Nonterminal.VAL_RONT]
-OPERATORS = [Terminal.DIV, Terminal.MULT, Terminal.PLUS, Terminal.MINUS, Terminal.EXPON]
+USELESS_TERMS = [Terminal.L_PAREN.value, Terminal.R_PAREN.value]
+OPERATORS = [Terminal.DIV.value, Terminal.MULT.value, Terminal.PLUS.value, Terminal.MINUS.value, Terminal.EXPON.value, Terminal.NEG.value]
 
 def build_ir(parse_tree, ir_stack):
     left_of_operator = []
@@ -36,7 +35,7 @@ def build_ir(parse_tree, ir_stack):
         build_ir(ront, ir_stack)
     if operator is not None:
         build_ir(operator, ir_stack)
-    if type(parse_tree.value) == Terminal:
+    if type(parse_tree.value) == Token:
         ir_stack.append(parse_tree.value)
     for i in remaining:
         build_ir(i, ir_stack)

@@ -5,6 +5,15 @@ SUBTRACT_AFTER = [TokenType.NUMBER, TokenType.NAME, TokenType.R_PAREN]
 DIGITS = "1234567890"
 NAME_CHARS = DIGITS + '_' + "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
+class TermTokPair:
+    def __init__(self, tok):
+        if tok == SpecialSymbols.EOF:
+            self.term = tok
+            self.tok = tok
+        else:
+            self.term = Terminal(tok)
+            self.tok = tok
+
 def tokenize(line):
     # we'll keep track of this to diferentiate negative numbers and subtraction
     prev_type = None
@@ -30,7 +39,7 @@ def tokenize(line):
             except StopIteration:
                 eof_found = True
 
-            yield Terminal(Token(number, type))
+            yield TermTokPair(Token(number, type))
             prev_type = type
 
             if eof_found:
@@ -52,7 +61,7 @@ def tokenize(line):
             except StopIteration:
                 eof_found = True
 
-            yield Terminal(Token(name, type))
+            yield TermTokPair(Token(name, type))
             prev_type = type
 
             if eof_found:
@@ -61,26 +70,26 @@ def tokenize(line):
 
         if (c == '-') and (prev_type not in SUBTRACT_AFTER):
             type = TokenType.UNARY_NEGATIVE
-            yield Terminal(Token(c, type))
+            yield TermTokPair(Token(c, type))
             prev_type = type
         # intential if instead of elif, because the lengthy ones move the interator one past their end
         elif c in OPERATORS:
             #print("OP")
             type = TokenType.OPERATOR
-            yield Terminal(Token(c, type))
+            yield TermTokPair(Token(c, type))
             prev_type = type
         elif c == '(':
             #print("PAREN")
             type =  TokenType.L_PAREN
-            yield Terminal(Token(c, type))
+            yield TermTokPair(Token(c, type))
             prev_type = type
         elif c == ')':
             #print("PAREN")
             type =  TokenType.R_PAREN
-            yield Terminal(Token(c, type))
+            yield TermTokPair(Token(c, type))
             prev_type = type
         elif not c.isspace():
             raise SyntaxError("Unexpected character '"+c+"'")
 
 
-    yield SpecialSymbols.EOF
+    yield TermTokPair(SpecialSymbols.EOF)

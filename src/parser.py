@@ -66,8 +66,10 @@ class Node:
     def add_child(self, child):
         self.children = [child] + self.children
 
-def symbol_tuple(item):
-    return (item, Node(item))
+class symbol_pair:
+    def __init__(self, item):
+        self.item = item
+        self.node = Node(item)
 
 def build_tree(word_iter):
     
@@ -75,22 +77,22 @@ def build_tree(word_iter):
     word = next(word_iter)
     # push eof onto Stack;
     stack = []
-    stack.append(symbol_tuple(SpecialSymbols.EOF))
+    stack.append(symbol_pair(SpecialSymbols.EOF))
     # push the start symbol, S, onto Stack;
-    stack.append(symbol_tuple(Nonterminal.GOAL))
+    stack.append(symbol_pair(Nonterminal.GOAL))
     # focus ← top of Stack;
-    tree_root = stack[-1][1]
+    tree_root = stack[-1].node
     focus = stack[-1]
     # loop forever;
     while True:
         # if (focus = eof and word = eof)
-        if focus[0] == SpecialSymbols.EOF and word == SpecialSymbols.EOF:
+        if focus.item == SpecialSymbols.EOF and word.term == SpecialSymbols.EOF:
             # then report success and exit the loop;
             return tree_root
         # else if (focus ∈ T or focus = eof) then begin;
-        if type(focus[0]) is Terminal or focus[0] == SpecialSymbols.EOF:
+        if type(focus.item) is Terminal or focus == SpecialSymbols.EOF:
             # if focus matches word then begin;
-            if focus[0] == word:
+            if focus.item == word.term:
                 # pop Stack;
                 stack.pop()
                 # word ← NextWord( );
@@ -101,8 +103,8 @@ def build_tree(word_iter):
         # else begin; /* focus is a nonterminal */
         else:
             # if Table[focus,word] is A → B1B2 ··· Bk then begin;
-            if LOOKAHEAD[(focus[0], word)] != -1:
-                (A,B) = PROD[LOOKAHEAD[(focus[0], word)]]
+            if LOOKAHEAD[(focus.item, word.term)] != -1:
+                (A,B) = PROD[LOOKAHEAD[(focus.item, word.term)]]
                 k = len(B)
                 # pop Stack;
                 stack.pop()
@@ -111,10 +113,10 @@ def build_tree(word_iter):
                     # if (Bi ≠ ϵ)
                     if B[i] != SpecialSymbols.EMPTY:
                         # then push Bi onto Stack;
-                        stack.append(symbol_tuple(B[i]))
-                        focus[1].add_child(stack[-1][1])
-                        if type(stack[-1][0]) is Terminal:
-                            pass
+                        stack.append(symbol_pair(B[i]))
+                        focus.node.add_child(stack[-1].node)
+                        if type(stack[-1].item) is Terminal:
+                            stack[-1].node.value = word.tok
             # else report an error expanding focus;
             else:
                 return False
