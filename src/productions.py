@@ -26,22 +26,22 @@ def get_class_productions():
     cfg.add_production(Nonterminal.GOAL, [SpecialSymbols.EMPTY])
 
     cfg.add_production(Nonterminal.EXPR, [Nonterminal.PROD, Nonterminal.EXPR_])
-    cfg.add_production(Nonterminal.EXPR_, [Terminal.EXPON, Nonterminal.PROD_RONT, Nonterminal.EXPR_])
+    cfg.add_production(Nonterminal.EXPR_, [Terminal.PLUS, Nonterminal.PROD_RONT, Nonterminal.EXPR_])
+    cfg.add_production(Nonterminal.EXPR_, [Terminal.MINUS, Nonterminal.PROD_RONT, Nonterminal.EXPR_])
     cfg.add_production(Nonterminal.EXPR_, [SpecialSymbols.EMPTY])
 
     cfg.add_production(Nonterminal.PROD, [Nonterminal.TERM, Nonterminal.PROD_])
     cfg.add_production(Nonterminal.PROD_RONT, [Nonterminal.TERM, Nonterminal.PROD_])
 
 
-    cfg.add_production(Nonterminal.PROD_, [Terminal.PLUS, Nonterminal.TERM_RONT, Nonterminal.PROD_])
-    cfg.add_production(Nonterminal.PROD_, [Terminal.MINUS, Nonterminal.TERM_RONT, Nonterminal.PROD_])
+    cfg.add_production(Nonterminal.PROD_, [Terminal.MULT, Nonterminal.TERM_RONT, Nonterminal.PROD_])
+    cfg.add_production(Nonterminal.PROD_, [Terminal.DIV, Nonterminal.TERM_RONT, Nonterminal.PROD_])
     cfg.add_production(Nonterminal.PROD_, [SpecialSymbols.EMPTY])
 
     cfg.add_production(Nonterminal.TERM, [Nonterminal.FACT_VAL, Nonterminal.TERM_])
     cfg.add_production(Nonterminal.TERM_RONT, [Nonterminal.FACT_VAL, Nonterminal.TERM_])
 
-    cfg.add_production(Nonterminal.TERM_, [Terminal.MULT, Nonterminal.VAL_RONT, Nonterminal.TERM_])
-    cfg.add_production(Nonterminal.TERM_, [Terminal.DIV, Nonterminal.VAL_RONT, Nonterminal.TERM_])
+    cfg.add_production(Nonterminal.TERM_, [Terminal.EXPON, Nonterminal.VAL_RONT, Nonterminal.TERM_])
     cfg.add_production(Nonterminal.TERM_, [SpecialSymbols.EMPTY])
 
     cfg.add_production(Nonterminal.FACT_VAL, [Terminal.NEG, Nonterminal.FACTOR])

@@ -8,7 +8,10 @@ def ir_to_string(ir):
     ret = ""
     for i in ir:
         if type(i) == Token:
-            ret += i.text + " "
+            if i.type == TokenType.UNARY_NEGATIVE:
+                ret += "NEG "
+            else:
+                ret += i.text + " "
         else:
             ret += str(i) + " "
     return ret
