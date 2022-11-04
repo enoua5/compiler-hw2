@@ -1,4 +1,4 @@
-from src.productions import SpecialSymbols, Terminal, Nonterminal, get_table
+from src.productions import SpecialSymbols, Terminal, Nonterminal, get_table, Token
 
 LOOKAHEAD, PROD = get_table()
 
@@ -55,7 +55,7 @@ class Node:
         self.children = []
 
     def _to_string(self, depth=0):
-        ret = (" "*depth)+str(self.value)+"\n"
+        ret = (" "*depth)+str(self.value.__repr__())+"\n"
         for i in self.children:
             ret += i._to_string(depth+1)
         return ret
@@ -113,6 +113,8 @@ def build_tree(word_iter):
                         # then push Bi onto Stack;
                         stack.append(symbol_tuple(B[i]))
                         focus[1].add_child(stack[-1][1])
+                        if type(stack[-1][0]) is Terminal:
+                            pass
             # else report an error expanding focus;
             else:
                 return False

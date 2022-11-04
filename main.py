@@ -1,12 +1,14 @@
 from src.token import tokenize
 from src.parser import verify_valid, build_tree
 import src.productions
+from src.ast import build_ir
 
 BAD_FILE = "ll1_invalid_book.txt"
 GOOD_FILE = "ll1_valid_class.txt"
 BOOK_FILE = "ll1_valid_book.txt"
+TO_IR_FILE = "ll1_to_ir.txt"
 
-def verify(file, should_be_good):
+def verify(file):
     f = open(file, 'r')
     
     lines = f.readlines()
@@ -16,10 +18,14 @@ def verify(file, should_be_good):
     for line in lines:
         # line_okay = True
         # try:
+        print()
+        print("="*20)
         print(line)
         token_list = tokenize(line)
         tree = build_tree(token_list)
         print(tree)
+        print(build_ir(tree, []))
+
     #     except SyntaxError:
     #         line_okay = False
         
@@ -53,5 +59,5 @@ if __name__ == '__main__':
     table, *ignore = src.productions.get_table()
     print_table(table)
 
-    verify(GOOD_FILE, True)
+    verify(TO_IR_FILE)
     #verify(BAD_FILE, False)
