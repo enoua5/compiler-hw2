@@ -12,10 +12,13 @@ class Nonterminal(Enum):
     GOAL = auto()
     PROD = auto()
     PROD_ = auto()
+    PROD_RONT = auto()
     TERM = auto()
     TERM_ = auto()
+    TERM_RONT = auto()
     FACTOR = auto()
     FACT_VAL = auto()
+    VAL_RONT = auto()
     EXPR = auto()
     EXPR_ = auto()
 

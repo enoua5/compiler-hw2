@@ -1,5 +1,5 @@
 from src.token import tokenize
-from src.parser import verify_valid
+from src.parser import verify_valid, build_tree
 import src.productions
 
 BAD_FILE = "ll1_invalid_book.txt"
@@ -11,22 +11,24 @@ def verify(file, should_be_good):
     
     lines = f.readlines()
 
-    okay_lines = 0
-    total_lines = 0
+    # okay_lines = 0
+    # total_lines = 0
     for line in lines:
-        line_okay = True
-        try:
-            token_list = tokenize(line)
-            line_okay = verify_valid(token_list)
-        except SyntaxError:
-            line_okay = False
+        # line_okay = True
+        # try:
+        print(line)
+        token_list = tokenize(line)
+        tree = build_tree(token_list)
+        print(tree)
+    #     except SyntaxError:
+    #         line_okay = False
         
-        if line_okay != should_be_good:
-            print("Line was miscategorized:", line.replace('\n',''))
-        if line_okay:
-            okay_lines += 1
-        total_lines += 1
-    print("File '", file, "' had",okay_lines,'/',total_lines,"valid.")
+    #     if line_okay != should_be_good:
+    #         print("Line was miscategorized:", line.replace('\n',''))
+    #     if line_okay:
+    #         okay_lines += 1
+    #     total_lines += 1
+    # print("File '", file, "' had",okay_lines,'/',total_lines,"valid.")
 
 
     f.close()
@@ -52,4 +54,4 @@ if __name__ == '__main__':
     print_table(table)
 
     verify(GOOD_FILE, True)
-    verify(BAD_FILE, False)
+    #verify(BAD_FILE, False)
