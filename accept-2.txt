@@ -1,0 +1,168 @@
+num var1 = 2
+print(var1)
+num var2 = var1 + varv1
+print(var2)
+num var3 = var1 * var2
+print(var3)
+num var4 = var3 - var2
+print(var4)
+num var5 = var4 / var3
+print(var5)
+num var6 = var1 + var2 * var3
+print(var6)
+num var7 = var4-var1
+print(var7)
+num var8 = 3*4
+print(var8)
+num var9 = 12 / 6
+print(var9)
+num var10 = 12/6
+print(var10)
+num var11 = 5 + 4 * 3
+print(var11)
+num var12 = 12 + 34 * 45
+print(var12)
+num var13 = (4 / 5)
+print(var13)
+num var14 = 2 * 2 + 5 * 5
+print(var14)
+num var15 = 42
+print(var15)
+num var16 = (42)
+print(var16)
+num var17 = ((42))
+print(var17)
+num var18 = ( ( 42 ) )
+print(var18)
+num var19 = var1
+print(var19)
+num var20 = var1 + var19
+print(var20)
+num var21 = var1 + var2
+print(var21)
+num var22 = var9 * var10
+print(var22)
+num var23 = var1+var2*var3
+print(var23)
+num var24 = var19-var20
+print(var24)
+num var25 = 1234*5678
+print(var25)
+num var26 = 100000/var13
+print(var26)
+num var27 = ((12-8)-3)
+print(var27)
+num var28 = (5*(8/4))
+print(var28)
+num var29 = (1+2) * 3
+print(var29)
+num var30 = ((var1/var2)+(var3*vavr4))
+print(var30)
+num var31 = a_
+print(var31)
+num var32 = (a_)
+print(var32)
+num var33 = (v_____2 + v__3__)
+print(var33)
+num var34 = ((((   300 + var1   ))))
+print(var34)
+num var35 = ( var33 -var2) + 18
+print(var35)
+num var36 = (((((9+(2*(110-(30/2))))*8)+1000)/2)+(((3*3*3*3)+1)/2))
+print(var36)
+num var37 = 2            +             3
+print(var37)
+num var38 =     (                       var1                  +var2                 )
+print(var38)
+num var39 = -42
+print(var39)
+num var40 = (-42)
+print(var40)
+num var41 = ( -42)
+print(var41)
+num var42 = -var1
+print(var42)
+num var43 = -1 * var1 / -1
+print(var43)
+num var44 = 2-3
+print(var44)
+num var45 = 2 - 3
+print(var45)
+num var46 = 2 - -3
+print(var46)
+num var47 = 2- -3
+print(var47)
+num var48 = -2-3
+print(var48)
+num var49 = -2- -3
+print(var49)
+num var50 = -2 - -3
+print(var50)
+num var51 = (-2 - -3)
+print(var51)
+num var52 = ( -2 - -3)
+print(var52)
+num var53 = -2-(-3)
+print(var53)
+num var54 = -2-( -3)
+print(var54)
+num var55 = -2 - (-3)
+print(var55)
+num var56 = -2 - (-3 - (4))
+print(var56)
+num var57 = -2 - (-3 - (4))
+print(var57)
+num var58 = -2 - ( -3 -( -4))
+print(var58)
+num var59 = -2-(-2-(-2-2))
+print(var59)
+num var60 = -2 - (-2 - (-2 - 2))
+print(var60)
+num var61 = -11-(-22 - (-33-(-44 - (-55 - (-66)))))
+print(var61)
+num var62 = 2--3
+print(var62)
+num var63 = 2+-3
+print(var63)
+num var64 = 184 +- 84
+print(var64)
+num var65 = 2--a
+print(var65)
+num var66 = 2+-a
+print(var66)
+num var67 = 2 + - 4
+print(var67)
+num var68 = 2          +                -             4
+print(var68)
+num var69 = 2 +- 4
+print(var69)
+num var70 = 4 * 3 / 2 + 1
+print(var70)
+num four = 4
+num three = 3
+num two = 2
+num one = 1
+num var71 = four * three / two + one
+print(var71)
+num var72 = 4 * 3 / 2 + one
+print(var72)
+num var73 = (((2+3)*4)+(7+(8/2)))
+print(var73)
+num var74 = (((2+3)*4)+(7+(var1/2)))
+print(var74)
+num var75
+var75 = 1234
+print(var75)
+num var76=314
+print(var76)
+flum num1 = 1.23456 
+print(num1)
+flum num2 = .1
+print(num2)
+flum num3 = 3.14159
+print(num3)
+flum num4 = num2 + num3
+print(num4)
+flum num5 = num2 * num3
+print(num5)
+

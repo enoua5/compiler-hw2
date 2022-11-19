@@ -1,0 +1,71 @@
+num oktobad1 = 1
+num oktobad1 = 666
+
+num bad1 = bad0
+
+numvar2 = 1234 
+
+num num = 4555 
+
+num flum = 5555
+
+flum flum = 6666
+
+flum num = 7777
+
+num good1 = 1
+num good2 = 2
+num bad2 = good1 = good2
+
+num ok1, bad4
+
+num bad4 = print(good1)
+
+flum bad5 = 1.2.3
+flum bad6 = 1.333_333
+flum bad7 = 1. 3 
+
+num bad8 = * + / y
+num bad9 = 3 + * 4
+num bad10 = ((a + b)
+num bad11 = (a + b))
+num bad12 = (
+num bad13 = )
+num bad14 = ()
+num bad15 = (.)
+num bad16 = + a -
+num bad17 = (3(4(5))) 
+num bad18 = 18.3()
+num bad19 = 123.45.6
+num bad20 = 42 42
+num bad21 = (a+b)+(c*d))
+num bad22 = ++1
+num bad23 = ++var
+num bad24 = +42
+num bad25 = +42 + +42
+num bad26 = var.0
+num bad27 = *var
+num bad28 = var 1
+num bad29 = (((( var1 + ) 18 )))
+num bad30 = (((((9+(2*(110-(30/2))))*8)+1000)/2))+(((3*3*3*3)+1)/2))
+num bad31 = a = b = c
+num bad32 = obj1.runMethod()
+num bad33 = printf("Hello, World!\n");
+num bad34 = return 0
+num bad35 = class Foo
+num bad36 = operator+()
+num bad37 = obj1.operator+(obj2)
+num bad38 = -------------------------------------------1
+num bad39 = --var
+num bad40 = --1
+num bad41 = 3+^4
+num bad42 = 34^
+num bad43 = ^34
+num bad44 = _underscore
+num bad45 = _var1 + _var2
+num bad46 = +42 + +42
+num bad47 = 2++3
+num bad48 = 2---a
+num bad49 = 2-- -a
+num bad50 = 2+++3
+num bad51 = 2-+a
