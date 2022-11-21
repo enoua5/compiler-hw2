@@ -1,8 +1,13 @@
 from src.token_enums import *
 
-OPERATORS = ['+', '-', '/', '*', '^']
+OPERATORS = ['+', '-', '/', '*', '^', '=']
+KEYWORDS = {
+    "print": Terminal.KW_PRINT,
+    "flum": Terminal.KW_FLUM,
+    "num": Terminal.KW_NUM,
+}
 SUBTRACT_AFTER = [TokenType.NUMBER, TokenType.NAME, TokenType.R_PAREN]
-DIGITS = "1234567890"
+DIGITS = "1234567890."
 NAME_CHARS = DIGITS + '_' + "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 class TermTokPair:
@@ -30,9 +35,15 @@ def tokenize(line):
             eof_found = False
 
             number = c
+            used_dec_point = (number == '.')
             try:
                 c = next(line_iter)
                 while c in DIGITS:
+                    if c == '.':
+                        if used_dec_point:
+                            break
+                        used_dec_point = True
+
                     number += c
                     #print(number)
                     c = next(line_iter)
@@ -61,8 +72,12 @@ def tokenize(line):
             except StopIteration:
                 eof_found = True
 
-            yield TermTokPair(Token(name, type))
-            prev_type = type
+            if name in KEYWORDS:
+                yield TermTokPair(KEYWORDS[name])
+                prev_type = TokenType.KEYWORD
+            else:
+                yield TermTokPair(Token(name, type))
+                prev_type = type
 
             if eof_found:
                 break

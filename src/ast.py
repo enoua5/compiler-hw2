@@ -2,7 +2,9 @@ from src.parser import Node
 from src.token_enums import Terminal, Nonterminal, Token, TokenType
 
 USELESS_TERMS = [Terminal.L_PAREN.value, Terminal.R_PAREN.value]
-OPERATORS = [Terminal.DIV.value, Terminal.MULT.value, Terminal.PLUS.value, Terminal.MINUS.value, Terminal.EXPON.value, Terminal.NEG.value]
+OPERATORS = [Terminal.DIV.value, Terminal.MULT.value, Terminal.PLUS.value, Terminal.MINUS.value, Terminal.EXPON.value, Terminal.NEG.value, Terminal.EQ.value]
+INCLUDED_KEYWORDS = [Terminal.KW_FLUM, Terminal.KW_NUM, Terminal.KW_PRINT]
+APPENDED_KEYWORDS = [Terminal.KW_PRINT]
 
 def ir_to_string(ir):
     ret = ""
@@ -12,6 +14,12 @@ def ir_to_string(ir):
                 ret += "NEG "
             else:
                 ret += i.text + " "
+        elif i == Terminal.KW_FLUM:
+            ret += "DECLARE_FLUM" + " "
+        elif i == Terminal.KW_NUM:
+            ret += "DECLARE_NUM" + " "
+        elif i == Terminal.KW_PRINT:
+            ret += "PRINT()" + " "
         else:
             ret += str(i) + " "
     return ret
@@ -50,6 +58,7 @@ def simplify_ir(ir):
     return stack
 
 def build_ir(parse_tree, ir_stack):
+
     left_of_operator = []
     operator = None
     ront = None
@@ -72,8 +81,7 @@ def build_ir(parse_tree, ir_stack):
             phase += 1
         else:
             remaining.append(child)
-    
-
+        
     for i in left_of_operator:
         build_ir(i, ir_stack)
     if ront is not None:
@@ -84,6 +92,10 @@ def build_ir(parse_tree, ir_stack):
         ir_stack.append(parse_tree.value)
     for i in remaining:
         build_ir(i, ir_stack)
-        
+    if parse_tree.value in INCLUDED_KEYWORDS:
+        ir_stack.append(parse_tree.value)
+
+    if len(ir_stack) > 1 and ir_stack[0] in APPENDED_KEYWORDS:
+        ir_stack = ir_stack[1:]+ir_stack[:1]
 
     return ir_stack

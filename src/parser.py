@@ -1,4 +1,5 @@
 from src.productions import SpecialSymbols, Terminal, Nonterminal, get_table, Token
+from src.token import TermTokPair
 
 LOOKAHEAD, PROD = get_table()
 
@@ -53,17 +54,23 @@ class Node:
     def __init__(self, value):
         self.value = value
         self.children = []
+        self.parent = None
 
     def _to_string(self, depth=0):
         ret = (" "*depth)+str(self.value.__repr__())+"\n"
         for i in self.children:
             ret += i._to_string(depth+1)
+        if len(self.children) != 0:
+            orig_rep = str(self.value.__repr__())
+            slash_rep = orig_rep[:1] + '/' + orig_rep[1:]
+            ret += (" "*depth)+slash_rep+"\n"
         return ret
 
     def __str__(self):
         return self._to_string()
 
     def add_child(self, child):
+        child.parent = self
         self.children = [child] + self.children
 
 class symbol_pair:
@@ -93,6 +100,7 @@ def build_tree(word_iter):
         if type(focus.item) is Terminal or focus == SpecialSymbols.EOF:
             # if focus matches word then begin;
             if focus.item == word.term:
+                focus.node.value = word.tok
                 # pop Stack;
                 stack.pop()
                 # word ← NextWord( );
