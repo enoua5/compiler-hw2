@@ -2,51 +2,23 @@ from src.token import tokenize
 from src.parser import verify_valid, build_tree
 import src.productions
 from src.ast import build_ir, ir_to_string, simplify_ir
+from src.compile import compile
 
 # BAD_FILE = "ll1_invalid_book.txt"
 # GOOD_FILE = "ll1_valid_class.txt"
 # BOOK_FILE = "ll1_valid_book.txt"
 # TO_IR_FILE = "ll1_to_ir.txt"
-GOOD_FILE = "accept-2.txt"
+GOOD_FILE = "files/accept-2.txt"
+OUT_FILE = "out.nasm"
 
 def verify(file):
-    f = open(file, 'r')
-    
-    lines = f.readlines()
-
-    # okay_lines = 0
-    # total_lines = 0
-    for line in lines:
-        line_okay = True
-        postfix = "[COULD NOT PARSE]"
-        postfix_simplified = "[ERROR]"
-        try:
-            print("="*20)
-            print(line)
-            token_list = tokenize(line)
-            # for token in token_list:
-            #     print(token.term, token.tok)
-            # token_list = tokenize(line)
-            tree = build_tree(token_list)
-            # print()
-            # print(tree)
-            if tree == False:
-                line_okay = False
-                raise Exception()
-            ir = build_ir(tree, [])
-            postfix = ir_to_string(ir)
-            print(postfix)
-            #ir_simplified = simplify_ir(ir)
-            #postfix_simplified = ir_to_string(ir_simplified)
-
-        except:
-            line_okay = False
-        
-        #print("  Valid:" if line_okay else "Invalid:", line[:-1], "........", ir,"........", tree)
-
-
-
-    f.close()
+    asm = compile(file)
+    if asm is None:
+        print("Failed to compile")
+    else:
+        f = open(OUT_FILE, 'w')
+        f.write(asm)
+        f.close()
 
 
 
@@ -66,7 +38,6 @@ def print_table(table):
 
 if __name__ == '__main__':
     table, *ignore = src.productions.get_table()
-    print_table(table)
 
     verify(GOOD_FILE)
     #verify(BAD_FILE)
