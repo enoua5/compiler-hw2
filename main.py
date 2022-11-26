@@ -8,7 +8,7 @@ from src.compile import compile
 # GOOD_FILE = "ll1_valid_class.txt"
 # BOOK_FILE = "ll1_valid_book.txt"
 # TO_IR_FILE = "ll1_to_ir.txt"
-GOOD_FILE = "files/accept-2.txt"
+GOOD_FILE = "files/accept-2-no-flum.txt"
 OUT_FILE = "out.nasm"
 
 def verify(file):

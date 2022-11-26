@@ -54,8 +54,8 @@ main:
     mov rax, [rbp-0]
     mov rbx,  rax
     ; +
-    mov rax, rbx
-    add rax, rcx
+    mov rax, rcx
+    add rax, rbx
     mov rcx, rax
     ; =
     mov qword[rbp-8], rcx
@@ -74,9 +74,9 @@ main:
     mov rax, [rbp-8]
     mov rbx,  rax
     ; *
-    mov rax, rbx
-    mov edx, eax
     mov rax, rcx
+    mov edx, eax
+    mov rax, rbx
     imul eax, edx
     mov rcx, rax
     ; =
@@ -140,14 +140,14 @@ main:
     mov rax, [rbp-16]
     mov rsi,  rax
     ; *
-    mov rax, rsi
-    mov edx, eax
     mov rax, rbx
+    mov edx, eax
+    mov rax, rsi
     imul eax, edx
     mov rbx, rax
     ; +
-    mov rax, rbx
-    add rax, rcx
+    mov rax, rcx
+    add rax, rbx
     mov rcx, rax
     ; =
     mov qword[rbp-40], rcx
@@ -184,9 +184,9 @@ main:
     ; 4
     mov rbx, 4
     ; *
-    mov rax, rbx
-    mov edx, eax
     mov rax, rcx
+    mov edx, eax
+    mov rax, rbx
     imul eax, edx
     mov rcx, rax
     ; =
@@ -244,14 +244,14 @@ main:
     ; 3
     mov rsi, 3
     ; *
-    mov rax, rsi
-    mov edx, eax
     mov rax, rbx
+    mov edx, eax
+    mov rax, rsi
     imul eax, edx
     mov rbx, rax
     ; +
-    mov rax, rbx
-    add rax, rcx
+    mov rax, rcx
+    add rax, rbx
     mov rcx, rax
     ; =
     mov qword[rbp-80], rcx
@@ -270,14 +270,14 @@ main:
     ; 45
     mov rsi, 45
     ; *
-    mov rax, rsi
-    mov edx, eax
     mov rax, rbx
+    mov edx, eax
+    mov rax, rsi
     imul eax, edx
     mov rbx, rax
     ; +
-    mov rax, rbx
-    add rax, rcx
+    mov rax, rcx
+    add rax, rbx
     mov rcx, rax
     ; =
     mov qword[rbp-88], rcx
@@ -289,8 +289,8 @@ main:
     mov rax, rcx
     call printInt
     add rsp, 192
-    ; 4
-    mov rcx, 4
+    ; 6
+    mov rcx, 6
     ; 5
     mov rbx, 5
     ; /
@@ -313,9 +313,9 @@ main:
     ; 2
     mov rbx, 2
     ; *
-    mov rax, rbx
-    mov edx, eax
     mov rax, rcx
+    mov edx, eax
+    mov rax, rbx
     imul eax, edx
     mov rcx, rax
     ; 5
@@ -323,14 +323,14 @@ main:
     ; 5
     mov rsi, 5
     ; *
-    mov rax, rsi
-    mov edx, eax
     mov rax, rbx
+    mov edx, eax
+    mov rax, rsi
     imul eax, edx
     mov rbx, rax
     ; +
-    mov rax, rbx
-    add rax, rcx
+    mov rax, rcx
+    add rax, rbx
     mov rcx, rax
     ; =
     mov qword[rbp-104], rcx
@@ -410,8 +410,8 @@ main:
     mov rax, [rbp-144]
     mov rbx,  rax
     ; +
-    mov rax, rbx
-    add rax, rcx
+    mov rax, rcx
+    add rax, rbx
     mov rcx, rax
     ; =
     mov qword[rbp-152], rcx
@@ -430,8 +430,8 @@ main:
     mov rax, [rbp-8]
     mov rbx,  rax
     ; +
-    mov rax, rbx
-    add rax, rcx
+    mov rax, rcx
+    add rax, rbx
     mov rcx, rax
     ; =
     mov qword[rbp-160], rcx
@@ -450,9 +450,9 @@ main:
     mov rax, [rbp-72]
     mov rbx,  rax
     ; *
-    mov rax, rbx
-    mov edx, eax
     mov rax, rcx
+    mov edx, eax
+    mov rax, rbx
     imul eax, edx
     mov rcx, rax
     ; =
@@ -475,14 +475,14 @@ main:
     mov rax, [rbp-16]
     mov rsi,  rax
     ; *
-    mov rax, rsi
-    mov edx, eax
     mov rax, rbx
+    mov edx, eax
+    mov rax, rsi
     imul eax, edx
     mov rbx, rax
     ; +
-    mov rax, rbx
-    add rax, rcx
+    mov rax, rcx
+    add rax, rbx
     mov rcx, rax
     ; =
     mov qword[rbp-176], rcx
@@ -519,9 +519,9 @@ main:
     ; 5678
     mov rbx, 5678
     ; *
-    mov rax, rbx
-    mov edx, eax
     mov rax, rcx
+    mov edx, eax
+    mov rax, rbx
     imul eax, edx
     mov rcx, rax
     ; =
@@ -590,9 +590,9 @@ main:
     idiv rsi
     mov rbx, rax
     ; *
-    mov rax, rbx
-    mov edx, eax
     mov rax, rcx
+    mov edx, eax
+    mov rax, rbx
     imul eax, edx
     mov rcx, rax
     ; =
@@ -610,15 +610,15 @@ main:
     ; 2
     mov rbx, 2
     ; +
-    mov rax, rbx
-    add rax, rcx
+    mov rax, rcx
+    add rax, rbx
     mov rcx, rax
     ; 3
     mov rbx, 3
     ; *
-    mov rax, rbx
-    mov edx, eax
     mov rax, rcx
+    mov edx, eax
+    mov rax, rbx
     imul eax, edx
     mov rcx, rax
     ; =
@@ -649,14 +649,14 @@ main:
     mov rax, [rbp-24]
     mov rsi,  rax
     ; *
-    mov rax, rsi
-    mov edx, eax
     mov rax, rbx
+    mov edx, eax
+    mov rax, rsi
     imul eax, edx
     mov rbx, rax
     ; +
-    mov rax, rbx
-    add rax, rcx
+    mov rax, rcx
+    add rax, rbx
     mov rcx, rax
     ; =
     mov qword[rbp-232], rcx
@@ -717,8 +717,8 @@ main:
     mov rax, [rbp-264]
     mov rbx,  rax
     ; +
-    mov rax, rbx
-    add rax, rcx
+    mov rax, rcx
+    add rax, rbx
     mov rcx, rax
     ; =
     mov qword[rbp-288], rcx
@@ -736,8 +736,8 @@ main:
     mov rax, [rbp-0]
     mov rbx,  rax
     ; +
-    mov rax, rbx
-    add rax, rcx
+    mov rax, rcx
+    add rax, rbx
     mov rcx, rax
     ; =
     mov qword[rbp-296], rcx
@@ -762,8 +762,8 @@ main:
     ; 18
     mov rbx, 18
     ; +
-    mov rax, rbx
-    add rax, rcx
+    mov rax, rcx
+    add rax, rbx
     mov rcx, rax
     ; =
     mov qword[rbp-304], rcx
@@ -795,28 +795,28 @@ main:
     sub rax, rdi
     mov rsi, rax
     ; *
-    mov rax, rsi
-    mov edx, eax
     mov rax, rbx
+    mov edx, eax
+    mov rax, rsi
     imul eax, edx
     mov rbx, rax
     ; +
-    mov rax, rbx
-    add rax, rcx
+    mov rax, rcx
+    add rax, rbx
     mov rcx, rax
     ; 8
     mov rbx, 8
     ; *
-    mov rax, rbx
-    mov edx, eax
     mov rax, rcx
+    mov edx, eax
+    mov rax, rbx
     imul eax, edx
     mov rcx, rax
     ; 1000
     mov rbx, 1000
     ; +
-    mov rax, rbx
-    add rax, rcx
+    mov rax, rcx
+    add rax, rbx
     mov rcx, rax
     ; 2
     mov rbx, 2
@@ -830,32 +830,32 @@ main:
     ; 3
     mov rsi, 3
     ; *
-    mov rax, rsi
-    mov edx, eax
     mov rax, rbx
+    mov edx, eax
+    mov rax, rsi
     imul eax, edx
     mov rbx, rax
     ; 3
     mov rsi, 3
     ; *
-    mov rax, rsi
-    mov edx, eax
     mov rax, rbx
+    mov edx, eax
+    mov rax, rsi
     imul eax, edx
     mov rbx, rax
     ; 3
     mov rsi, 3
     ; *
-    mov rax, rsi
-    mov edx, eax
     mov rax, rbx
+    mov edx, eax
+    mov rax, rsi
     imul eax, edx
     mov rbx, rax
     ; 1
     mov rsi, 1
     ; +
-    mov rax, rsi
-    add rax, rbx
+    mov rax, rbx
+    add rax, rsi
     mov rbx, rax
     ; 2
     mov rsi, 2
@@ -865,8 +865,8 @@ main:
     idiv rsi
     mov rbx, rax
     ; +
-    mov rax, rbx
-    add rax, rcx
+    mov rax, rcx
+    add rax, rbx
     mov rcx, rax
     ; =
     mov qword[rbp-312], rcx
@@ -883,8 +883,8 @@ main:
     ; 3
     mov rbx, 3
     ; +
-    mov rax, rbx
-    add rax, rcx
+    mov rax, rcx
+    add rax, rbx
     mov rcx, rax
     ; =
     mov qword[rbp-320], rcx
@@ -903,8 +903,8 @@ main:
     mov rax, [rbp-8]
     mov rbx,  rax
     ; +
-    mov rax, rbx
-    add rax, rcx
+    mov rax, rcx
+    add rax, rbx
     mov rcx, rax
     ; =
     mov qword[rbp-328], rcx
@@ -1001,9 +1001,9 @@ main:
     mov rax, [rbp-0]
     mov rbx,  rax
     ; *
-    mov rax, rbx
-    mov edx, eax
     mov rax, rcx
+    mov edx, eax
+    mov rax, rbx
     imul eax, edx
     mov rcx, rax
     ; 1
@@ -1670,8 +1670,8 @@ main:
     imul eax, edx
     mov rbx, rax
     ; +
-    mov rax, rbx
-    add rax, rcx
+    mov rax, rcx
+    add rax, rbx
     mov rcx, rax
     ; =
     mov qword[rbp-528], rcx
@@ -1694,8 +1694,8 @@ main:
     imul eax, edx
     mov rbx, rax
     ; +
-    mov rax, rbx
-    add rax, rcx
+    mov rax, rcx
+    add rax, rbx
     mov rcx, rax
     ; =
     mov qword[rbp-536], rcx
@@ -1744,8 +1744,8 @@ main:
     imul eax, edx
     mov rbx, rax
     ; +
-    mov rax, rbx
-    add rax, rcx
+    mov rax, rcx
+    add rax, rbx
     mov rcx, rax
     ; =
     mov qword[rbp-552], rcx
@@ -1768,8 +1768,8 @@ main:
     imul eax, edx
     mov rbx, rax
     ; +
-    mov rax, rbx
-    add rax, rcx
+    mov rax, rcx
+    add rax, rbx
     mov rcx, rax
     ; =
     mov qword[rbp-560], rcx
@@ -1792,8 +1792,8 @@ main:
     imul eax, edx
     mov rbx, rax
     ; +
-    mov rax, rbx
-    add rax, rcx
+    mov rax, rcx
+    add rax, rbx
     mov rcx, rax
     ; =
     mov qword[rbp-568], rcx
@@ -1816,8 +1816,8 @@ main:
     imul eax, edx
     mov rbx, rax
     ; +
-    mov rax, rbx
-    add rax, rcx
+    mov rax, rcx
+    add rax, rbx
     mov rcx, rax
     ; =
     mov qword[rbp-576], rcx
@@ -1834,9 +1834,9 @@ main:
     ; 3
     mov rbx, 3
     ; *
-    mov rax, rbx
-    mov edx, eax
     mov rax, rcx
+    mov edx, eax
+    mov rax, rbx
     imul eax, edx
     mov rcx, rax
     ; 2
@@ -1849,8 +1849,8 @@ main:
     ; 1
     mov rbx, 1
     ; +
-    mov rax, rbx
-    add rax, rcx
+    mov rax, rcx
+    add rax, rbx
     mov rcx, rax
     ; =
     mov qword[rbp-584], rcx
@@ -1885,9 +1885,9 @@ main:
     mov rax, [rbp-600]
     mov rbx,  rax
     ; *
-    mov rax, rbx
-    mov edx, eax
     mov rax, rcx
+    mov edx, eax
+    mov rax, rbx
     imul eax, edx
     mov rcx, rax
     ; two
@@ -1902,8 +1902,8 @@ main:
     mov rax, [rbp-616]
     mov rbx,  rax
     ; +
-    mov rax, rbx
-    add rax, rcx
+    mov rax, rcx
+    add rax, rbx
     mov rcx, rax
     ; =
     mov qword[rbp-624], rcx
@@ -1920,9 +1920,9 @@ main:
     ; 3
     mov rbx, 3
     ; *
-    mov rax, rbx
-    mov edx, eax
     mov rax, rcx
+    mov edx, eax
+    mov rax, rbx
     imul eax, edx
     mov rcx, rax
     ; 2
@@ -1936,8 +1936,8 @@ main:
     mov rax, [rbp-616]
     mov rbx,  rax
     ; +
-    mov rax, rbx
-    add rax, rcx
+    mov rax, rcx
+    add rax, rbx
     mov rcx, rax
     ; =
     mov qword[rbp-632], rcx
@@ -1954,15 +1954,15 @@ main:
     ; 3
     mov rbx, 3
     ; +
-    mov rax, rbx
-    add rax, rcx
+    mov rax, rcx
+    add rax, rbx
     mov rcx, rax
     ; 4
     mov rbx, 4
     ; *
-    mov rax, rbx
-    mov edx, eax
     mov rax, rcx
+    mov edx, eax
+    mov rax, rbx
     imul eax, edx
     mov rcx, rax
     ; 7
@@ -1977,12 +1977,12 @@ main:
     idiv rdi
     mov rsi, rax
     ; +
-    mov rax, rsi
-    add rax, rbx
+    mov rax, rbx
+    add rax, rsi
     mov rbx, rax
     ; +
-    mov rax, rbx
-    add rax, rcx
+    mov rax, rcx
+    add rax, rbx
     mov rcx, rax
     ; =
     mov qword[rbp-640], rcx
@@ -1999,15 +1999,15 @@ main:
     ; 3
     mov rbx, 3
     ; +
-    mov rax, rbx
-    add rax, rcx
+    mov rax, rcx
+    add rax, rbx
     mov rcx, rax
     ; 4
     mov rbx, 4
     ; *
-    mov rax, rbx
-    mov edx, eax
     mov rax, rcx
+    mov edx, eax
+    mov rax, rbx
     imul eax, edx
     mov rcx, rax
     ; 7
@@ -2023,12 +2023,12 @@ main:
     idiv rdi
     mov rsi, rax
     ; +
-    mov rax, rsi
-    add rax, rbx
+    mov rax, rbx
+    add rax, rsi
     mov rbx, rax
     ; +
-    mov rax, rbx
-    add rax, rcx
+    mov rax, rcx
+    add rax, rbx
     mov rcx, rax
     ; =
     mov qword[rbp-648], rcx
@@ -2067,84 +2067,6 @@ main:
     mov rax, rcx
     call printInt
     add rsp, 1344
-    ; 1.23456
-    mov rcx, 1.23456
-    ; =
-    mov qword[rbp-672], rcx
-    ; num1
-    mov rax, [rbp-672]
-    mov rcx,  rax
-    ; print
-    sub rsp, 1360
-    mov rax, rcx
-    call printInt
-    add rsp, 1360
-    ; .1
-    mov rcx, .1
-    ; =
-    mov qword[rbp-680], rcx
-    ; num2
-    mov rax, [rbp-680]
-    mov rcx,  rax
-    ; print
-    sub rsp, 1376
-    mov rax, rcx
-    call printInt
-    add rsp, 1376
-    ; 3.14159
-    mov rcx, 3.14159
-    ; =
-    mov qword[rbp-688], rcx
-    ; num3
-    mov rax, [rbp-688]
-    mov rcx,  rax
-    ; print
-    sub rsp, 1392
-    mov rax, rcx
-    call printInt
-    add rsp, 1392
-    ; num2
-    mov rax, [rbp-680]
-    mov rcx,  rax
-    ; num3
-    mov rax, [rbp-688]
-    mov rbx,  rax
-    ; +
-    mov rax, rbx
-    add rax, rcx
-    mov rcx, rax
-    ; =
-    mov qword[rbp-696], rcx
-    ; num4
-    mov rax, [rbp-696]
-    mov rcx,  rax
-    ; print
-    sub rsp, 1408
-    mov rax, rcx
-    call printInt
-    add rsp, 1408
-    ; num2
-    mov rax, [rbp-680]
-    mov rcx,  rax
-    ; num3
-    mov rax, [rbp-688]
-    mov rbx,  rax
-    ; *
-    mov rax, rbx
-    mov edx, eax
-    mov rax, rcx
-    imul eax, edx
-    mov rcx, rax
-    ; =
-    mov qword[rbp-704], rcx
-    ; num5
-    mov rax, [rbp-704]
-    mov rcx,  rax
-    ; print
-    sub rsp, 1424
-    mov rax, rcx
-    call printInt
-    add rsp, 1424
 
 exit:
     mov rax, 60

@@ -20,36 +20,78 @@ CALC_REGISTER_ORDER = [
     "r15",
 ]
 
+FLUM_REGISTER_ORDER = [
+    "xmm1",
+    "xmm2",
+    "xmm3",
+    "xmm4",
+    "xmm5",
+    "xmm6",
+    "xmm7",
+    "xmm8",
+    "xmm9",
+    "xmm10",
+    "xmm11",
+    "xmm12",
+    "xmm13",
+    "xmm14",
+    "xmm15",
+]
+
 class RegStack:
     def __init__(self, real_stack_base:int):
         self.real_stack_base = real_stack_base
-        self.stack_length = 0
 
-    def next_loc(self) -> str:
-        if len(CALC_REGISTER_ORDER) > self.stack_length:
-            place = CALC_REGISTER_ORDER[self.stack_length]
+        self.num_stack_length = 0
+        self.flum_stack_length = 0
+
+        self.nums_on_real_stack = 0
+        self.flums_on_real_stack = 0
+        self.locations_used = []
+        self.types = []
+
+    def next_num(self) -> str:
+        if len(CALC_REGISTER_ORDER) > self.num_stack_length:
+            place = CALC_REGISTER_ORDER[self.num_stack_length]
         else:
-            place = "[rbp-"+str(self.real_stack_base+(self.stack_length-len(CALC_REGISTER_ORDER)))+"]"
+            place = "[rbp-"+str(self.real_stack_base + self.nums_on_real_stack + self.flums_on_real_stack)+"]"
+            self.nums_on_real_stack += 1
 
-        self.stack_length += 1
+        self.locations_used.append(place)
+        self.types.append(VarType.NUM)
+        self.num_stack_length += 1
         return place
 
-    def pop(self) -> str:
-        self.stack_length -= 1
-        if self.stack_length < 0:
-            raise IndexError
-
-        if len(CALC_REGISTER_ORDER) > self.stack_length:
-            place = CALC_REGISTER_ORDER[self.stack_length]
+    def next_flum(self) -> str:
+        if len(FLUM_REGISTER_ORDER) > self.flum_stack_length:
+            place = FLUM_REGISTER_ORDER[self.flum_stack_length]
         else:
-            place = "[rbp-"+str((self.real_stack_base+(self.stack_length-len(CALC_REGISTER_ORDER)))*8)+"]"
+            place = "[rbp-"+str(self.real_stack_base + self.nums_on_real_stack + self.flums_on_real_stack)+"]"
+            self.nums_on_real_stack += 1
 
+        self.locations_used.append(place)
+        self.types.append(VarType.FLUM)
+        self.flum_stack_length += 1
         return place
+
+    def pop(self) -> tuple[str, VarType]:
+        print(self.locations_used)
+        place = self.locations_used.pop()
+        type = self.types.pop()
+
+        if type == VarType.FLUM:
+            self.flum_stack_length -= 1
+            if place[0] == '[':
+                self.flums_on_real_stack -= 1
+        else:
+            self.num_stack_length -= 1
+            if place[0] == '[':
+                self.nums_on_real_stack -= 1
+
+        return (place, type)
 
     def rsp_needed(self) -> int:
-        if len(CALC_REGISTER_ORDER) > self.stack_length:
-            return self.real_stack_base * 8
-        return (self.real_stack_base + (self.stack_length-len(CALC_REGISTER_ORDER)))*8
+        return (self.real_stack_base + self.flums_on_real_stack + self.nums_on_real_stack)*8
 
 
 ASM_HEADER = """
@@ -165,7 +207,7 @@ def compile(file)->str|None:
             if type(token) == Token:
                 if token.type == TokenType.NAME:
                     asm += "    ; "+token.text+'\n'
-                    next_loc = expr_stack.next_loc()
+                    next_loc = expr_stack.next_num()
                     if next_loc[0] == "[":
                         next_loc = "qword"+next_loc
 
@@ -180,7 +222,7 @@ def compile(file)->str|None:
                     
                 elif token.type == TokenType.NUMBER:
                     asm += "    ; "+token.text+'\n'
-                    next_loc = expr_stack.next_loc()
+                    next_loc = expr_stack.next_num()
                     if next_loc[0] == "[":
                         next_loc = "qword"+next_loc
                     asm += "    mov "+next_loc+", " + str(token.text) + '\n'
@@ -189,24 +231,28 @@ def compile(file)->str|None:
                     try:
                         if token.text == '+':
                             asm += "    ; +\n"
-                            asm += "    mov rax, "+expr_stack.pop()+"\n"
-                            asm += "    add rax, "+expr_stack.pop()+'\n'
+                            a, a_type = expr_stack.pop()
+                            b, b_type = expr_stack.pop()
+                            asm += "    mov rax, "+b+"\n"
+                            asm += "    add rax, "+a+'\n'
                         elif token.text == '-':
                             asm += "    ; -\n"
-                            a = expr_stack.pop()
-                            b = expr_stack.pop()
+                            a, a_type = expr_stack.pop()
+                            b, b_type = expr_stack.pop()
                             asm += "    mov rax, "+b+"\n"
                             asm += "    sub rax, "+a+'\n'
                         elif token.text == '*':
                             asm += "    ; *\n"
-                            asm += "    mov rax, "+expr_stack.pop()+"\n"
+                            a, a_type = expr_stack.pop()
+                            b, b_type = expr_stack.pop()
+                            asm += "    mov rax, "+b+"\n"
                             asm += "    mov edx, eax\n"
-                            asm += "    mov rax, "+expr_stack.pop()+"\n"
+                            asm += "    mov rax, "+a+"\n"
                             asm += "    imul eax, edx\n"
                         elif token.text == '/':
                             asm += "    ; /\n"
-                            a = expr_stack.pop()
-                            b = expr_stack.pop()
+                            a, a_type = expr_stack.pop()
+                            b, b_type = expr_stack.pop()
                             asm += "    mov rax, "+b+"\n"
                             asm += "    mov rdx, 0\n"
                             #asm += "    cqo\n"
@@ -223,7 +269,7 @@ def compile(file)->str|None:
                         break
 
 
-                    next_loc = expr_stack.next_loc()
+                    next_loc = expr_stack.next_num()
                     if next_loc[0] == "[":
                         next_loc = "qword"+next_loc
                     asm += "    mov "+next_loc+", rax\n"
@@ -231,11 +277,12 @@ def compile(file)->str|None:
                 else:
                     if token.type == TokenType.UNARY_NEGATIVE:
                         asm += "    ; *-1\n"
+                        a, a_type = expr_stack.pop()
                         asm += "    mov rax, -1\n"
                         asm += "    mov edx, eax\n"
-                        asm += "    mov rax, "+expr_stack.pop()+"\n"
+                        asm += "    mov rax, "+a+"\n"
                         asm += "    imul eax, edx\n"
-                        next_loc = expr_stack.next_loc()
+                        next_loc = expr_stack.next_num()
                         if next_loc[0] == "[":
                             next_loc = "qword"+next_loc
                         asm += "    mov "+next_loc+", rax\n"
