@@ -75,7 +75,6 @@ class RegStack:
         return place
 
     def pop(self) -> tuple[str, VarType]:
-        print(self.locations_used)
         place = self.locations_used.pop()
         type = self.types.pop()
 
@@ -100,8 +99,36 @@ ASM_HEADER = """
 
 section .data
 numberPrinter db "%d",0x0d,0x0a,0
+flumberPrinter db "%g", 10, 0
 
 section .text
+printFloat:
+    push    rbp                     ; Avoid stack alignment issues
+    push    rcx
+    push    rdx
+    push    rsi
+    push    rdi
+    push    r8
+    push    r9
+    push    r10
+    push    r11
+
+    mov     rdi, flumberPrinter
+    mov     rax, 1                  ; 1 non-int arg
+    call    [rel printf wrt ..got]
+    
+    pop     r11
+    pop     r10
+    pop     r9
+    pop     r8
+    pop     rdi
+    pop     rsi
+    pop     rdx
+    pop     rcx
+    pop     rbp                     ; Avoid stack alignment issues
+    ret
+
+
 printInt:
     push    rbp                     ; Avoid stack alignment issues
     push    rcx
@@ -154,14 +181,19 @@ def compile(file)->str|None:
     for line_num, line in enumerate(lines):
         try:
             token_list = tokenize(line)
+            
+            tree = build_tree(token_list)
+            if tree == False:
+                print("Could not parse line "+str(line_num+1))
+                error_free = False
+                continue
+
         except SyntaxError as e:
             print("Syntax error on line "+str(line_num+1)+": "+e.msg)
             error_free = False
             continue
-
-        tree = build_tree(token_list)
-        if tree == False:
-            print("Could not parse line "+str(line_num+1))
+        except KeyError as e:
+            print("Parse error on line "+str(line_num+1))
             error_free = False
             continue
 
@@ -187,10 +219,8 @@ def compile(file)->str|None:
                 error_free = False
                 continue
 
-        assignment = False
         assignment_location = None
         if type(ir[-1]) == Token and ir[-1] == Token('=', TokenType.OPERATOR):
-            assignment = True
             if type(ir[0]) != Token or ir[0].type != TokenType.NAME:
                 print("Can only assign to a variable; line "+str(line_num+1))
                 error_free = False
@@ -207,94 +237,210 @@ def compile(file)->str|None:
             if type(token) == Token:
                 if token.type == TokenType.NAME:
                     asm += "    ; "+token.text+'\n'
-                    next_loc = expr_stack.next_num()
-                    if next_loc[0] == "[":
-                        next_loc = "qword"+next_loc
-
                     var_loc = table.get_info(token.text)
                     if var_loc is None:
                         print("Use of undeclared variable, "+token.text+" on line "+str(line_num+1))
                         error_free = False
                         break
 
-                    asm += "    mov rax, [rbp-"+str(var_loc.offset*8)+"]\n"
-                    asm += "    mov "+next_loc+",  rax\n"
+                    if var_loc.type == VarType.NUM:
+                        next_loc = expr_stack.next_num()
+                        if next_loc[0] == "[":
+                            next_loc = "qword"+next_loc
+                            asm += "    mov rax, [rbp-"+str(var_loc.offset*8)+"]\n"
+                            asm += "    mov "+next_loc+", rax\n"
+                        else:
+                            asm += "    mov "+next_loc+", [rbp-"+str(var_loc.offset*8)+"]\n"
+                    
+                    elif var_loc.type == VarType.FLUM:
+                        next_loc = expr_stack.next_flum()
+                        if next_loc[0] == "[":
+                            next_loc = "qword"+next_loc
+
+                            asm += "    mov rax, [rbp-"+str(var_loc.offset*8)+"]\n"
+                            asm += "    mov "+next_loc+", rax\n"
+
+                        else:
+                            asm += "    movlpd "+next_loc+", [rbp-"+str(var_loc.offset*8)+"]\n"
+
                     
                 elif token.type == TokenType.NUMBER:
                     asm += "    ; "+token.text+'\n'
-                    next_loc = expr_stack.next_num()
-                    if next_loc[0] == "[":
-                        next_loc = "qword"+next_loc
-                    asm += "    mov "+next_loc+", " + str(token.text) + '\n'
+                    if '.' in token.text:
+                        next_loc = expr_stack.next_flum()
+
+                        if next_loc[0] == "[":
+                            next_loc = "qword"+next_loc
+                        
+                        padded_flum = token.text
+                        if padded_flum[0] == '.':
+                            padded_flum = '0'+padded_flum
+                        if padded_flum[-1] == '.':
+                            padded_flum = padded_flum+'0'
+                            
+                        asm += "    mov rax, __float64__(" + padded_flum + ")\n"
+                        asm += "    mov qword[rsp-"+str(expr_stack.rsp_needed())+"], rax\n"
+                        asm += "    movlpd "+next_loc+", qword[rsp-"+str(expr_stack.rsp_needed())+"]\n"
+                    else:
+                        next_loc = expr_stack.next_num()
+                        if next_loc[0] == "[":
+                            next_loc = "qword"+next_loc
+                        asm += "    mov "+next_loc+", " + str(token.text) + '\n'
                 elif token.type == TokenType.OPERATOR:
 
+                    if token.text == '=':
+                        asm += "    ; =\n"
+                        a, a_type = expr_stack.pop()
+                        if assignment_location.type != a_type:
+                            print("Mismatch of types in assignment on line "+str(line_num))
+                            error_free = False
+                            break
+
+                        if a_type == VarType.NUM:
+                            asm += "    mov qword[rbp-"+str(assignment_location.offset*8)+"], "+a+"\n"
+                        elif a_type == VarType.FLUM:
+                            asm += "    movlpd qword[rbp-"+str(assignment_location.offset*8)+"], "+a+"\n"
+
+
+                        continue
+
+                    a, a_type = expr_stack.pop()
+                    b, b_type = expr_stack.pop()
+                    if a_type != b_type:
+                        print("Type mismatch on line "+str(line_num))
+                        error_free = False
+                        break
+
                     try:
+
                         if token.text == '+':
                             asm += "    ; +\n"
-                            a, a_type = expr_stack.pop()
-                            b, b_type = expr_stack.pop()
-                            asm += "    mov rax, "+b+"\n"
-                            asm += "    add rax, "+a+'\n'
+
+                            if a_type == VarType.NUM:
+                                asm += "    mov rax, "+b+"\n"
+                                asm += "    add rax, "+a+'\n'
+                            elif a_type == VarType.FLUM:
+                                if b[0] == '[':
+                                    asm += "    movlpd xmm0, "+b+"\n"
+                                    asm += "    addsd xmm0, "+a+"\n"
+                                else:
+                                    asm += "    movlpd [rsp-"+str(expr_stack.rsp_needed())+"], "+b+"\n"
+                                    asm += "    movlpd xmm0, [rsp-"+str(expr_stack.rsp_needed())+"]\n"
+                                    asm += "    addsd xmm0, "+a+"\n"
+
+
                         elif token.text == '-':
                             asm += "    ; -\n"
-                            a, a_type = expr_stack.pop()
-                            b, b_type = expr_stack.pop()
-                            asm += "    mov rax, "+b+"\n"
-                            asm += "    sub rax, "+a+'\n'
+
+                            if a_type == VarType.NUM:
+                                asm += "    mov rax, "+b+"\n"
+                                asm += "    sub rax, "+a+'\n'
+                            elif a_type == VarType.FLUM:
+                                if b[0] == '[':
+                                    asm += "    movlpd xmm0, "+b+"\n"
+                                    asm += "    subsd xmm0, "+a+"\n"
+                                else:
+                                    asm += "    movlpd [rsp-"+str(expr_stack.rsp_needed())+"], "+b+"\n"
+                                    asm += "    movlpd xmm0, [rsp-"+str(expr_stack.rsp_needed())+"]\n"
+                                    asm += "    subsd xmm0, "+a+"\n"
+
                         elif token.text == '*':
                             asm += "    ; *\n"
-                            a, a_type = expr_stack.pop()
-                            b, b_type = expr_stack.pop()
-                            asm += "    mov rax, "+b+"\n"
-                            asm += "    mov edx, eax\n"
-                            asm += "    mov rax, "+a+"\n"
-                            asm += "    imul eax, edx\n"
+                            if a_type == VarType.NUM:
+                                asm += "    mov rax, "+b+"\n"
+                                asm += "    mov edx, eax\n"
+                                asm += "    mov rax, "+a+"\n"
+                                asm += "    imul eax, edx\n"
+                            elif a_type == VarType.FLUM:
+                                if b[0] == '[':
+                                    asm += "    movlpd xmm0, "+b+"\n"
+                                    asm += "    mulsd xmm0, "+a+"\n"
+                                else:
+                                    asm += "    movlpd [rsp-"+str(expr_stack.rsp_needed())+"], "+b+"\n"
+                                    asm += "    movlpd xmm0, [rsp-"+str(expr_stack.rsp_needed())+"]\n"
+                                    asm += "    mulsd xmm0, "+a+"\n"
                         elif token.text == '/':
                             asm += "    ; /\n"
-                            a, a_type = expr_stack.pop()
-                            b, b_type = expr_stack.pop()
-                            asm += "    mov rax, "+b+"\n"
-                            asm += "    mov rdx, 0\n"
-                            #asm += "    cqo\n"
-                            asm += "    idiv "+a+'\n'
+                            
+                            if a_type == VarType.NUM:
+                                asm += "    mov rax, "+b+"\n"
+                                asm += "    mov rdx, 0\n"
+                                #asm += "    cqo\n"
+                                asm += "    idiv "+a+'\n'
+                            elif a_type == VarType.FLUM:
+                                if b[0] == '[':
+                                    asm += "    movlpd xmm0, "+b+"\n"
+                                    asm += "    divsd xmm0, "+a+"\n"
+                                else:
+                                    asm += "    movlpd [rsp-"+str(expr_stack.rsp_needed())+"], "+b+"\n"
+                                    asm += "    movlpd xmm0, [rsp-"+str(expr_stack.rsp_needed())+"]\n"
+                                    asm += "    divsd xmm0, "+a+"\n"
 
-                        elif token.text == '=':
-                            asm += "    ; =\n"
-                            asm += "    mov qword[rbp-"+str(assignment_location.offset*8)+"], "+CALC_REGISTER_ORDER[0]+"\n"
-                            continue
 
                     except IndexError:
                         print("Unexpected end of stack parsing expression on line "+str(line_num+1))
                         error_free = False
                         break
 
+                    if a_type == VarType.NUM:
+                        next_loc = expr_stack.next_num()
+                        if next_loc[0] == "[":
+                            next_loc = "qword"+next_loc
+                        asm += "    mov "+next_loc+", rax\n"
+                    elif a_type == VarType.FLUM:
+                        next_loc = expr_stack.next_flum()
+                        if next_loc[0] == "[":
+                            next_loc = "qword"+next_loc
+                            asm += "    movlpd "+next_loc+", xmm0\n"
+                        else:
+                            asm += "    movlpd [rsp-"+str(expr_stack.rsp_needed())+"], xmm0\n"
+                            asm += "    movlpd "+next_loc+", [rsp-"+str(expr_stack.rsp_needed())+"]\n"
 
-                    next_loc = expr_stack.next_num()
-                    if next_loc[0] == "[":
-                        next_loc = "qword"+next_loc
-                    asm += "    mov "+next_loc+", rax\n"
                 
                 else:
                     if token.type == TokenType.UNARY_NEGATIVE:
                         asm += "    ; *-1\n"
                         a, a_type = expr_stack.pop()
-                        asm += "    mov rax, -1\n"
-                        asm += "    mov edx, eax\n"
-                        asm += "    mov rax, "+a+"\n"
-                        asm += "    imul eax, edx\n"
-                        next_loc = expr_stack.next_num()
-                        if next_loc[0] == "[":
-                            next_loc = "qword"+next_loc
-                        asm += "    mov "+next_loc+", rax\n"
+                        if a_type == VarType.NUM:
+                            asm += "    mov rax, -1\n"
+                            asm += "    mov edx, eax\n"
+                            asm += "    mov rax, "+a+"\n"
+                            asm += "    imul eax, edx\n"
+                            next_loc = expr_stack.next_num()
+                            if next_loc[0] == "[":
+                                next_loc = "qword"+next_loc
+                            asm += "    mov "+next_loc+", rax\n"
+                        elif a_type == VarType.FLUM:
+                            asm += "    mov [rsp-"+str(expr_stack.rsp_needed())+"], __float64__(-1)\n"
+                            asm += "    movlpd xmm0, [rsp-"+str(expr_stack.rsp_needed())+"]\n"
+                            asm += "    mulsd xmm0, "+a+"\n"
+
+                            next_loc = expr_stack.next_flum()
+                            if next_loc[0] == "[":
+                                next_loc = "qword"+next_loc
+                            asm += "    movlpd "+next_loc+", xmm0\n"
 
             else:
                 if token == Terminal.KW_PRINT:
+                    a, a_type = expr_stack.pop()
+
                     asm += "    ; print\n"
                     # TODO ??????????????????????????????????????????????????????
                     asm += "    sub rsp, "+str(expr_stack.rsp_needed()*2)+"\n"
-                    asm += "    mov rax, rcx\n"
-                    asm += "    call printInt\n"
+                    if a_type == VarType.NUM:
+                        asm += "    mov rax, "+a+"\n"
+                        asm += "    call printInt\n"
+                    else:
+                        if a[0] == '[':
+                            asm += "    movlpd xmm0, "+a+"\n"
+                        else:
+                            asm += "    movlpd [rsp], "+a+"\n"
+                            asm += "    movlpd xmm0, [rsp]\n"
+                        asm += "    call printFloat\n"
+
+                    
                     asm += "    add rsp, "+str(expr_stack.rsp_needed()*2)+"\n"
+
                     
         else:
             continue

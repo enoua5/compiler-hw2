@@ -4,8 +4,36 @@
 
 section .data
 numberPrinter db "%d",0x0d,0x0a,0
+flumberPrinter db "%g", 10, 0
 
 section .text
+printFloat:
+    push    rbp                     ; Avoid stack alignment issues
+    push    rcx
+    push    rdx
+    push    rsi
+    push    rdi
+    push    r8
+    push    r9
+    push    r10
+    push    r11
+
+    mov     rdi, flumberPrinter
+    mov     rax, 1                  ; 1 non-int arg
+    call    [rel printf wrt ..got]
+    
+    pop     r11
+    pop     r10
+    pop     r9
+    pop     r8
+    pop     rdi
+    pop     rsi
+    pop     rdx
+    pop     rcx
+    pop     rbp                     ; Avoid stack alignment issues
+    ret
+
+
 printInt:
     push    rbp                     ; Avoid stack alignment issues
     push    rcx
@@ -40,19 +68,16 @@ main:
     ; =
     mov qword[rbp-0], rcx
     ; var1
-    mov rax, [rbp-0]
-    mov rcx,  rax
+    mov rcx, [rbp-0]
     ; print
     sub rsp, 16
     mov rax, rcx
     call printInt
     add rsp, 16
     ; var1
-    mov rax, [rbp-0]
-    mov rcx,  rax
+    mov rcx, [rbp-0]
     ; var1
-    mov rax, [rbp-0]
-    mov rbx,  rax
+    mov rbx, [rbp-0]
     ; +
     mov rax, rcx
     add rax, rbx
@@ -60,19 +85,16 @@ main:
     ; =
     mov qword[rbp-8], rcx
     ; var2
-    mov rax, [rbp-8]
-    mov rcx,  rax
+    mov rcx, [rbp-8]
     ; print
     sub rsp, 32
     mov rax, rcx
     call printInt
     add rsp, 32
     ; var1
-    mov rax, [rbp-0]
-    mov rcx,  rax
+    mov rcx, [rbp-0]
     ; var2
-    mov rax, [rbp-8]
-    mov rbx,  rax
+    mov rbx, [rbp-8]
     ; *
     mov rax, rcx
     mov edx, eax
@@ -82,19 +104,16 @@ main:
     ; =
     mov qword[rbp-16], rcx
     ; var3
-    mov rax, [rbp-16]
-    mov rcx,  rax
+    mov rcx, [rbp-16]
     ; print
     sub rsp, 48
     mov rax, rcx
     call printInt
     add rsp, 48
     ; var3
-    mov rax, [rbp-16]
-    mov rcx,  rax
+    mov rcx, [rbp-16]
     ; var2
-    mov rax, [rbp-8]
-    mov rbx,  rax
+    mov rbx, [rbp-8]
     ; -
     mov rax, rcx
     sub rax, rbx
@@ -102,19 +121,16 @@ main:
     ; =
     mov qword[rbp-24], rcx
     ; var4
-    mov rax, [rbp-24]
-    mov rcx,  rax
+    mov rcx, [rbp-24]
     ; print
     sub rsp, 64
     mov rax, rcx
     call printInt
     add rsp, 64
     ; var4
-    mov rax, [rbp-24]
-    mov rcx,  rax
+    mov rcx, [rbp-24]
     ; var3
-    mov rax, [rbp-16]
-    mov rbx,  rax
+    mov rbx, [rbp-16]
     ; /
     mov rax, rcx
     mov rdx, 0
@@ -123,22 +139,18 @@ main:
     ; =
     mov qword[rbp-32], rcx
     ; var5
-    mov rax, [rbp-32]
-    mov rcx,  rax
+    mov rcx, [rbp-32]
     ; print
     sub rsp, 80
     mov rax, rcx
     call printInt
     add rsp, 80
     ; var1
-    mov rax, [rbp-0]
-    mov rcx,  rax
+    mov rcx, [rbp-0]
     ; var2
-    mov rax, [rbp-8]
-    mov rbx,  rax
+    mov rbx, [rbp-8]
     ; var3
-    mov rax, [rbp-16]
-    mov rsi,  rax
+    mov rsi, [rbp-16]
     ; *
     mov rax, rbx
     mov edx, eax
@@ -152,19 +164,16 @@ main:
     ; =
     mov qword[rbp-40], rcx
     ; var6
-    mov rax, [rbp-40]
-    mov rcx,  rax
+    mov rcx, [rbp-40]
     ; print
     sub rsp, 96
     mov rax, rcx
     call printInt
     add rsp, 96
     ; var4
-    mov rax, [rbp-24]
-    mov rcx,  rax
+    mov rcx, [rbp-24]
     ; var1
-    mov rax, [rbp-0]
-    mov rbx,  rax
+    mov rbx, [rbp-0]
     ; -
     mov rax, rcx
     sub rax, rbx
@@ -172,8 +181,7 @@ main:
     ; =
     mov qword[rbp-48], rcx
     ; var7
-    mov rax, [rbp-48]
-    mov rcx,  rax
+    mov rcx, [rbp-48]
     ; print
     sub rsp, 112
     mov rax, rcx
@@ -192,8 +200,7 @@ main:
     ; =
     mov qword[rbp-56], rcx
     ; var8
-    mov rax, [rbp-56]
-    mov rcx,  rax
+    mov rcx, [rbp-56]
     ; print
     sub rsp, 128
     mov rax, rcx
@@ -211,8 +218,7 @@ main:
     ; =
     mov qword[rbp-64], rcx
     ; var9
-    mov rax, [rbp-64]
-    mov rcx,  rax
+    mov rcx, [rbp-64]
     ; print
     sub rsp, 144
     mov rax, rcx
@@ -230,8 +236,7 @@ main:
     ; =
     mov qword[rbp-72], rcx
     ; var10
-    mov rax, [rbp-72]
-    mov rcx,  rax
+    mov rcx, [rbp-72]
     ; print
     sub rsp, 160
     mov rax, rcx
@@ -256,8 +261,7 @@ main:
     ; =
     mov qword[rbp-80], rcx
     ; var11
-    mov rax, [rbp-80]
-    mov rcx,  rax
+    mov rcx, [rbp-80]
     ; print
     sub rsp, 176
     mov rax, rcx
@@ -282,17 +286,16 @@ main:
     ; =
     mov qword[rbp-88], rcx
     ; var12
-    mov rax, [rbp-88]
-    mov rcx,  rax
+    mov rcx, [rbp-88]
     ; print
     sub rsp, 192
     mov rax, rcx
     call printInt
     add rsp, 192
-    ; 6
-    mov rcx, 6
     ; 5
-    mov rbx, 5
+    mov rcx, 5
+    ; 4
+    mov rbx, 4
     ; /
     mov rax, rcx
     mov rdx, 0
@@ -301,8 +304,7 @@ main:
     ; =
     mov qword[rbp-96], rcx
     ; var13
-    mov rax, [rbp-96]
-    mov rcx,  rax
+    mov rcx, [rbp-96]
     ; print
     sub rsp, 208
     mov rax, rcx
@@ -335,8 +337,7 @@ main:
     ; =
     mov qword[rbp-104], rcx
     ; var14
-    mov rax, [rbp-104]
-    mov rcx,  rax
+    mov rcx, [rbp-104]
     ; print
     sub rsp, 224
     mov rax, rcx
@@ -347,8 +348,7 @@ main:
     ; =
     mov qword[rbp-112], rcx
     ; var15
-    mov rax, [rbp-112]
-    mov rcx,  rax
+    mov rcx, [rbp-112]
     ; print
     sub rsp, 240
     mov rax, rcx
@@ -359,8 +359,7 @@ main:
     ; =
     mov qword[rbp-120], rcx
     ; var16
-    mov rax, [rbp-120]
-    mov rcx,  rax
+    mov rcx, [rbp-120]
     ; print
     sub rsp, 256
     mov rax, rcx
@@ -371,8 +370,7 @@ main:
     ; =
     mov qword[rbp-128], rcx
     ; var17
-    mov rax, [rbp-128]
-    mov rcx,  rax
+    mov rcx, [rbp-128]
     ; print
     sub rsp, 272
     mov rax, rcx
@@ -383,32 +381,27 @@ main:
     ; =
     mov qword[rbp-136], rcx
     ; var18
-    mov rax, [rbp-136]
-    mov rcx,  rax
+    mov rcx, [rbp-136]
     ; print
     sub rsp, 288
     mov rax, rcx
     call printInt
     add rsp, 288
     ; var1
-    mov rax, [rbp-0]
-    mov rcx,  rax
+    mov rcx, [rbp-0]
     ; =
     mov qword[rbp-144], rcx
     ; var19
-    mov rax, [rbp-144]
-    mov rcx,  rax
+    mov rcx, [rbp-144]
     ; print
     sub rsp, 304
     mov rax, rcx
     call printInt
     add rsp, 304
     ; var1
-    mov rax, [rbp-0]
-    mov rcx,  rax
+    mov rcx, [rbp-0]
     ; var19
-    mov rax, [rbp-144]
-    mov rbx,  rax
+    mov rbx, [rbp-144]
     ; +
     mov rax, rcx
     add rax, rbx
@@ -416,19 +409,16 @@ main:
     ; =
     mov qword[rbp-152], rcx
     ; var20
-    mov rax, [rbp-152]
-    mov rcx,  rax
+    mov rcx, [rbp-152]
     ; print
     sub rsp, 320
     mov rax, rcx
     call printInt
     add rsp, 320
     ; var1
-    mov rax, [rbp-0]
-    mov rcx,  rax
+    mov rcx, [rbp-0]
     ; var2
-    mov rax, [rbp-8]
-    mov rbx,  rax
+    mov rbx, [rbp-8]
     ; +
     mov rax, rcx
     add rax, rbx
@@ -436,19 +426,16 @@ main:
     ; =
     mov qword[rbp-160], rcx
     ; var21
-    mov rax, [rbp-160]
-    mov rcx,  rax
+    mov rcx, [rbp-160]
     ; print
     sub rsp, 336
     mov rax, rcx
     call printInt
     add rsp, 336
     ; var9
-    mov rax, [rbp-64]
-    mov rcx,  rax
+    mov rcx, [rbp-64]
     ; var10
-    mov rax, [rbp-72]
-    mov rbx,  rax
+    mov rbx, [rbp-72]
     ; *
     mov rax, rcx
     mov edx, eax
@@ -458,22 +445,18 @@ main:
     ; =
     mov qword[rbp-168], rcx
     ; var22
-    mov rax, [rbp-168]
-    mov rcx,  rax
+    mov rcx, [rbp-168]
     ; print
     sub rsp, 352
     mov rax, rcx
     call printInt
     add rsp, 352
     ; var1
-    mov rax, [rbp-0]
-    mov rcx,  rax
+    mov rcx, [rbp-0]
     ; var2
-    mov rax, [rbp-8]
-    mov rbx,  rax
+    mov rbx, [rbp-8]
     ; var3
-    mov rax, [rbp-16]
-    mov rsi,  rax
+    mov rsi, [rbp-16]
     ; *
     mov rax, rbx
     mov edx, eax
@@ -487,19 +470,16 @@ main:
     ; =
     mov qword[rbp-176], rcx
     ; var23
-    mov rax, [rbp-176]
-    mov rcx,  rax
+    mov rcx, [rbp-176]
     ; print
     sub rsp, 368
     mov rax, rcx
     call printInt
     add rsp, 368
     ; var19
-    mov rax, [rbp-144]
-    mov rcx,  rax
+    mov rcx, [rbp-144]
     ; var20
-    mov rax, [rbp-152]
-    mov rbx,  rax
+    mov rbx, [rbp-152]
     ; -
     mov rax, rcx
     sub rax, rbx
@@ -507,8 +487,7 @@ main:
     ; =
     mov qword[rbp-184], rcx
     ; var24
-    mov rax, [rbp-184]
-    mov rcx,  rax
+    mov rcx, [rbp-184]
     ; print
     sub rsp, 384
     mov rax, rcx
@@ -527,8 +506,7 @@ main:
     ; =
     mov qword[rbp-192], rcx
     ; var25
-    mov rax, [rbp-192]
-    mov rcx,  rax
+    mov rcx, [rbp-192]
     ; print
     sub rsp, 400
     mov rax, rcx
@@ -537,8 +515,7 @@ main:
     ; 100000
     mov rcx, 100000
     ; var13
-    mov rax, [rbp-96]
-    mov rbx,  rax
+    mov rbx, [rbp-96]
     ; /
     mov rax, rcx
     mov rdx, 0
@@ -547,8 +524,7 @@ main:
     ; =
     mov qword[rbp-200], rcx
     ; var26
-    mov rax, [rbp-200]
-    mov rcx,  rax
+    mov rcx, [rbp-200]
     ; print
     sub rsp, 416
     mov rax, rcx
@@ -571,8 +547,7 @@ main:
     ; =
     mov qword[rbp-208], rcx
     ; var27
-    mov rax, [rbp-208]
-    mov rcx,  rax
+    mov rcx, [rbp-208]
     ; print
     sub rsp, 432
     mov rax, rcx
@@ -598,8 +573,7 @@ main:
     ; =
     mov qword[rbp-216], rcx
     ; var28
-    mov rax, [rbp-216]
-    mov rcx,  rax
+    mov rcx, [rbp-216]
     ; print
     sub rsp, 448
     mov rax, rcx
@@ -624,30 +598,25 @@ main:
     ; =
     mov qword[rbp-224], rcx
     ; var29
-    mov rax, [rbp-224]
-    mov rcx,  rax
+    mov rcx, [rbp-224]
     ; print
     sub rsp, 464
     mov rax, rcx
     call printInt
     add rsp, 464
     ; var1
-    mov rax, [rbp-0]
-    mov rcx,  rax
+    mov rcx, [rbp-0]
     ; var2
-    mov rax, [rbp-8]
-    mov rbx,  rax
+    mov rbx, [rbp-8]
     ; /
     mov rax, rcx
     mov rdx, 0
     idiv rbx
     mov rcx, rax
     ; var3
-    mov rax, [rbp-16]
-    mov rbx,  rax
+    mov rbx, [rbp-16]
     ; var4
-    mov rax, [rbp-24]
-    mov rsi,  rax
+    mov rsi, [rbp-24]
     ; *
     mov rax, rbx
     mov edx, eax
@@ -661,8 +630,7 @@ main:
     ; =
     mov qword[rbp-232], rcx
     ; var30
-    mov rax, [rbp-232]
-    mov rcx,  rax
+    mov rcx, [rbp-232]
     ; print
     sub rsp, 480
     mov rax, rcx
@@ -685,37 +653,31 @@ main:
     ; =
     mov qword[rbp-264], rcx
     ; a_
-    mov rax, [rbp-240]
-    mov rcx,  rax
+    mov rcx, [rbp-240]
     ; =
     mov qword[rbp-272], rcx
     ; var31
-    mov rax, [rbp-272]
-    mov rcx,  rax
+    mov rcx, [rbp-272]
     ; print
     sub rsp, 560
     mov rax, rcx
     call printInt
     add rsp, 560
     ; a_
-    mov rax, [rbp-240]
-    mov rcx,  rax
+    mov rcx, [rbp-240]
     ; =
     mov qword[rbp-280], rcx
     ; var32
-    mov rax, [rbp-280]
-    mov rcx,  rax
+    mov rcx, [rbp-280]
     ; print
     sub rsp, 576
     mov rax, rcx
     call printInt
     add rsp, 576
     ; v_____2
-    mov rax, [rbp-248]
-    mov rcx,  rax
+    mov rcx, [rbp-248]
     ; v__3__
-    mov rax, [rbp-264]
-    mov rbx,  rax
+    mov rbx, [rbp-264]
     ; +
     mov rax, rcx
     add rax, rbx
@@ -723,8 +685,7 @@ main:
     ; =
     mov qword[rbp-288], rcx
     ; var33
-    mov rax, [rbp-288]
-    mov rcx,  rax
+    mov rcx, [rbp-288]
     ; print
     sub rsp, 592
     mov rax, rcx
@@ -733,8 +694,7 @@ main:
     ; 300
     mov rcx, 300
     ; var1
-    mov rax, [rbp-0]
-    mov rbx,  rax
+    mov rbx, [rbp-0]
     ; +
     mov rax, rcx
     add rax, rbx
@@ -742,19 +702,16 @@ main:
     ; =
     mov qword[rbp-296], rcx
     ; var34
-    mov rax, [rbp-296]
-    mov rcx,  rax
+    mov rcx, [rbp-296]
     ; print
     sub rsp, 608
     mov rax, rcx
     call printInt
     add rsp, 608
     ; var33
-    mov rax, [rbp-288]
-    mov rcx,  rax
+    mov rcx, [rbp-288]
     ; var2
-    mov rax, [rbp-8]
-    mov rbx,  rax
+    mov rbx, [rbp-8]
     ; -
     mov rax, rcx
     sub rax, rbx
@@ -768,8 +725,7 @@ main:
     ; =
     mov qword[rbp-304], rcx
     ; var35
-    mov rax, [rbp-304]
-    mov rcx,  rax
+    mov rcx, [rbp-304]
     ; print
     sub rsp, 624
     mov rax, rcx
@@ -871,8 +827,7 @@ main:
     ; =
     mov qword[rbp-312], rcx
     ; var36
-    mov rax, [rbp-312]
-    mov rcx,  rax
+    mov rcx, [rbp-312]
     ; print
     sub rsp, 640
     mov rax, rcx
@@ -889,19 +844,16 @@ main:
     ; =
     mov qword[rbp-320], rcx
     ; var37
-    mov rax, [rbp-320]
-    mov rcx,  rax
+    mov rcx, [rbp-320]
     ; print
     sub rsp, 656
     mov rax, rcx
     call printInt
     add rsp, 656
     ; var1
-    mov rax, [rbp-0]
-    mov rcx,  rax
+    mov rcx, [rbp-0]
     ; var2
-    mov rax, [rbp-8]
-    mov rbx,  rax
+    mov rbx, [rbp-8]
     ; +
     mov rax, rcx
     add rax, rbx
@@ -909,8 +861,7 @@ main:
     ; =
     mov qword[rbp-328], rcx
     ; var38
-    mov rax, [rbp-328]
-    mov rcx,  rax
+    mov rcx, [rbp-328]
     ; print
     sub rsp, 672
     mov rax, rcx
@@ -927,8 +878,7 @@ main:
     ; =
     mov qword[rbp-336], rcx
     ; var39
-    mov rax, [rbp-336]
-    mov rcx,  rax
+    mov rcx, [rbp-336]
     ; print
     sub rsp, 688
     mov rax, rcx
@@ -945,8 +895,7 @@ main:
     ; =
     mov qword[rbp-344], rcx
     ; var40
-    mov rax, [rbp-344]
-    mov rcx,  rax
+    mov rcx, [rbp-344]
     ; print
     sub rsp, 704
     mov rax, rcx
@@ -963,16 +912,14 @@ main:
     ; =
     mov qword[rbp-352], rcx
     ; var41
-    mov rax, [rbp-352]
-    mov rcx,  rax
+    mov rcx, [rbp-352]
     ; print
     sub rsp, 720
     mov rax, rcx
     call printInt
     add rsp, 720
     ; var1
-    mov rax, [rbp-0]
-    mov rcx,  rax
+    mov rcx, [rbp-0]
     ; *-1
     mov rax, -1
     mov edx, eax
@@ -982,8 +929,7 @@ main:
     ; =
     mov qword[rbp-360], rcx
     ; var42
-    mov rax, [rbp-360]
-    mov rcx,  rax
+    mov rcx, [rbp-360]
     ; print
     sub rsp, 736
     mov rax, rcx
@@ -998,8 +944,7 @@ main:
     imul eax, edx
     mov rcx, rax
     ; var1
-    mov rax, [rbp-0]
-    mov rbx,  rax
+    mov rbx, [rbp-0]
     ; *
     mov rax, rcx
     mov edx, eax
@@ -1022,8 +967,7 @@ main:
     ; =
     mov qword[rbp-368], rcx
     ; var43
-    mov rax, [rbp-368]
-    mov rcx,  rax
+    mov rcx, [rbp-368]
     ; print
     sub rsp, 752
     mov rax, rcx
@@ -1040,8 +984,7 @@ main:
     ; =
     mov qword[rbp-376], rcx
     ; var44
-    mov rax, [rbp-376]
-    mov rcx,  rax
+    mov rcx, [rbp-376]
     ; print
     sub rsp, 768
     mov rax, rcx
@@ -1058,8 +1001,7 @@ main:
     ; =
     mov qword[rbp-384], rcx
     ; var45
-    mov rax, [rbp-384]
-    mov rcx,  rax
+    mov rcx, [rbp-384]
     ; print
     sub rsp, 784
     mov rax, rcx
@@ -1082,8 +1024,7 @@ main:
     ; =
     mov qword[rbp-392], rcx
     ; var46
-    mov rax, [rbp-392]
-    mov rcx,  rax
+    mov rcx, [rbp-392]
     ; print
     sub rsp, 800
     mov rax, rcx
@@ -1106,8 +1047,7 @@ main:
     ; =
     mov qword[rbp-400], rcx
     ; var47
-    mov rax, [rbp-400]
-    mov rcx,  rax
+    mov rcx, [rbp-400]
     ; print
     sub rsp, 816
     mov rax, rcx
@@ -1130,8 +1070,7 @@ main:
     ; =
     mov qword[rbp-408], rcx
     ; var48
-    mov rax, [rbp-408]
-    mov rcx,  rax
+    mov rcx, [rbp-408]
     ; print
     sub rsp, 832
     mov rax, rcx
@@ -1160,8 +1099,7 @@ main:
     ; =
     mov qword[rbp-416], rcx
     ; var49
-    mov rax, [rbp-416]
-    mov rcx,  rax
+    mov rcx, [rbp-416]
     ; print
     sub rsp, 848
     mov rax, rcx
@@ -1190,8 +1128,7 @@ main:
     ; =
     mov qword[rbp-424], rcx
     ; var50
-    mov rax, [rbp-424]
-    mov rcx,  rax
+    mov rcx, [rbp-424]
     ; print
     sub rsp, 864
     mov rax, rcx
@@ -1220,8 +1157,7 @@ main:
     ; =
     mov qword[rbp-432], rcx
     ; var51
-    mov rax, [rbp-432]
-    mov rcx,  rax
+    mov rcx, [rbp-432]
     ; print
     sub rsp, 880
     mov rax, rcx
@@ -1250,8 +1186,7 @@ main:
     ; =
     mov qword[rbp-440], rcx
     ; var52
-    mov rax, [rbp-440]
-    mov rcx,  rax
+    mov rcx, [rbp-440]
     ; print
     sub rsp, 896
     mov rax, rcx
@@ -1280,8 +1215,7 @@ main:
     ; =
     mov qword[rbp-448], rcx
     ; var53
-    mov rax, [rbp-448]
-    mov rcx,  rax
+    mov rcx, [rbp-448]
     ; print
     sub rsp, 912
     mov rax, rcx
@@ -1310,8 +1244,7 @@ main:
     ; =
     mov qword[rbp-456], rcx
     ; var54
-    mov rax, [rbp-456]
-    mov rcx,  rax
+    mov rcx, [rbp-456]
     ; print
     sub rsp, 928
     mov rax, rcx
@@ -1340,8 +1273,7 @@ main:
     ; =
     mov qword[rbp-464], rcx
     ; var55
-    mov rax, [rbp-464]
-    mov rcx,  rax
+    mov rcx, [rbp-464]
     ; print
     sub rsp, 944
     mov rax, rcx
@@ -1376,8 +1308,7 @@ main:
     ; =
     mov qword[rbp-472], rcx
     ; var56
-    mov rax, [rbp-472]
-    mov rcx,  rax
+    mov rcx, [rbp-472]
     ; print
     sub rsp, 960
     mov rax, rcx
@@ -1412,8 +1343,7 @@ main:
     ; =
     mov qword[rbp-480], rcx
     ; var57
-    mov rax, [rbp-480]
-    mov rcx,  rax
+    mov rcx, [rbp-480]
     ; print
     sub rsp, 976
     mov rax, rcx
@@ -1454,8 +1384,7 @@ main:
     ; =
     mov qword[rbp-488], rcx
     ; var58
-    mov rax, [rbp-488]
-    mov rcx,  rax
+    mov rcx, [rbp-488]
     ; print
     sub rsp, 992
     mov rax, rcx
@@ -1502,8 +1431,7 @@ main:
     ; =
     mov qword[rbp-496], rcx
     ; var59
-    mov rax, [rbp-496]
-    mov rcx,  rax
+    mov rcx, [rbp-496]
     ; print
     sub rsp, 1008
     mov rax, rcx
@@ -1550,8 +1478,7 @@ main:
     ; =
     mov qword[rbp-504], rcx
     ; var60
-    mov rax, [rbp-504]
-    mov rcx,  rax
+    mov rcx, [rbp-504]
     ; print
     sub rsp, 1024
     mov rax, rcx
@@ -1628,8 +1555,7 @@ main:
     ; =
     mov qword[rbp-512], rcx
     ; var61
-    mov rax, [rbp-512]
-    mov rcx,  rax
+    mov rcx, [rbp-512]
     ; print
     sub rsp, 1040
     mov rax, rcx
@@ -1652,8 +1578,7 @@ main:
     ; =
     mov qword[rbp-520], rcx
     ; var62
-    mov rax, [rbp-520]
-    mov rcx,  rax
+    mov rcx, [rbp-520]
     ; print
     sub rsp, 1056
     mov rax, rcx
@@ -1676,8 +1601,7 @@ main:
     ; =
     mov qword[rbp-528], rcx
     ; var63
-    mov rax, [rbp-528]
-    mov rcx,  rax
+    mov rcx, [rbp-528]
     ; print
     sub rsp, 1072
     mov rax, rcx
@@ -1700,8 +1624,7 @@ main:
     ; =
     mov qword[rbp-536], rcx
     ; var64
-    mov rax, [rbp-536]
-    mov rcx,  rax
+    mov rcx, [rbp-536]
     ; print
     sub rsp, 1088
     mov rax, rcx
@@ -1710,8 +1633,7 @@ main:
     ; 2
     mov rcx, 2
     ; a
-    mov rax, [rbp-256]
-    mov rbx,  rax
+    mov rbx, [rbp-256]
     ; *-1
     mov rax, -1
     mov edx, eax
@@ -1725,8 +1647,7 @@ main:
     ; =
     mov qword[rbp-544], rcx
     ; var65
-    mov rax, [rbp-544]
-    mov rcx,  rax
+    mov rcx, [rbp-544]
     ; print
     sub rsp, 1104
     mov rax, rcx
@@ -1735,8 +1656,7 @@ main:
     ; 2
     mov rcx, 2
     ; a
-    mov rax, [rbp-256]
-    mov rbx,  rax
+    mov rbx, [rbp-256]
     ; *-1
     mov rax, -1
     mov edx, eax
@@ -1750,8 +1670,7 @@ main:
     ; =
     mov qword[rbp-552], rcx
     ; var66
-    mov rax, [rbp-552]
-    mov rcx,  rax
+    mov rcx, [rbp-552]
     ; print
     sub rsp, 1120
     mov rax, rcx
@@ -1774,8 +1693,7 @@ main:
     ; =
     mov qword[rbp-560], rcx
     ; var67
-    mov rax, [rbp-560]
-    mov rcx,  rax
+    mov rcx, [rbp-560]
     ; print
     sub rsp, 1136
     mov rax, rcx
@@ -1798,8 +1716,7 @@ main:
     ; =
     mov qword[rbp-568], rcx
     ; var68
-    mov rax, [rbp-568]
-    mov rcx,  rax
+    mov rcx, [rbp-568]
     ; print
     sub rsp, 1152
     mov rax, rcx
@@ -1822,8 +1739,7 @@ main:
     ; =
     mov qword[rbp-576], rcx
     ; var69
-    mov rax, [rbp-576]
-    mov rcx,  rax
+    mov rcx, [rbp-576]
     ; print
     sub rsp, 1168
     mov rax, rcx
@@ -1855,8 +1771,7 @@ main:
     ; =
     mov qword[rbp-584], rcx
     ; var70
-    mov rax, [rbp-584]
-    mov rcx,  rax
+    mov rcx, [rbp-584]
     ; print
     sub rsp, 1184
     mov rax, rcx
@@ -1879,11 +1794,9 @@ main:
     ; =
     mov qword[rbp-616], rcx
     ; four
-    mov rax, [rbp-592]
-    mov rcx,  rax
+    mov rcx, [rbp-592]
     ; three
-    mov rax, [rbp-600]
-    mov rbx,  rax
+    mov rbx, [rbp-600]
     ; *
     mov rax, rcx
     mov edx, eax
@@ -1891,16 +1804,14 @@ main:
     imul eax, edx
     mov rcx, rax
     ; two
-    mov rax, [rbp-608]
-    mov rbx,  rax
+    mov rbx, [rbp-608]
     ; /
     mov rax, rcx
     mov rdx, 0
     idiv rbx
     mov rcx, rax
     ; one
-    mov rax, [rbp-616]
-    mov rbx,  rax
+    mov rbx, [rbp-616]
     ; +
     mov rax, rcx
     add rax, rbx
@@ -1908,8 +1819,7 @@ main:
     ; =
     mov qword[rbp-624], rcx
     ; var71
-    mov rax, [rbp-624]
-    mov rcx,  rax
+    mov rcx, [rbp-624]
     ; print
     sub rsp, 1264
     mov rax, rcx
@@ -1933,8 +1843,7 @@ main:
     idiv rbx
     mov rcx, rax
     ; one
-    mov rax, [rbp-616]
-    mov rbx,  rax
+    mov rbx, [rbp-616]
     ; +
     mov rax, rcx
     add rax, rbx
@@ -1942,8 +1851,7 @@ main:
     ; =
     mov qword[rbp-632], rcx
     ; var72
-    mov rax, [rbp-632]
-    mov rcx,  rax
+    mov rcx, [rbp-632]
     ; print
     sub rsp, 1280
     mov rax, rcx
@@ -1987,8 +1895,7 @@ main:
     ; =
     mov qword[rbp-640], rcx
     ; var73
-    mov rax, [rbp-640]
-    mov rcx,  rax
+    mov rcx, [rbp-640]
     ; print
     sub rsp, 1296
     mov rax, rcx
@@ -2013,8 +1920,7 @@ main:
     ; 7
     mov rbx, 7
     ; var1
-    mov rax, [rbp-0]
-    mov rsi,  rax
+    mov rsi, [rbp-0]
     ; 2
     mov rdi, 2
     ; /
@@ -2033,23 +1939,20 @@ main:
     ; =
     mov qword[rbp-648], rcx
     ; var74
-    mov rax, [rbp-648]
-    mov rcx,  rax
+    mov rcx, [rbp-648]
     ; print
     sub rsp, 1312
     mov rax, rcx
     call printInt
     add rsp, 1312
     ; var75
-    mov rax, [rbp-656]
-    mov rcx,  rax
+    mov rcx, [rbp-656]
     ; 1234
     mov rcx, 1234
     ; =
     mov qword[rbp-656], rcx
     ; var75
-    mov rax, [rbp-656]
-    mov rcx,  rax
+    mov rcx, [rbp-656]
     ; print
     sub rsp, 1328
     mov rax, rcx
@@ -2060,13 +1963,94 @@ main:
     ; =
     mov qword[rbp-664], rcx
     ; var76
-    mov rax, [rbp-664]
-    mov rcx,  rax
+    mov rcx, [rbp-664]
     ; print
     sub rsp, 1344
     mov rax, rcx
     call printInt
     add rsp, 1344
+    ; 1.23456
+    mov rax, __float64__(1.23456)
+    mov qword[rsp-680], rax
+    movlpd xmm1, qword[rsp-680]
+    ; =
+    movlpd qword[rbp-672], xmm1
+    ; num1
+    movlpd xmm1, [rbp-672]
+    ; print
+    sub rsp, 1360
+    movlpd [rsp], xmm1
+    movlpd xmm0, [rsp]
+    call printFloat
+    add rsp, 1360
+    ; .1
+    mov rax, __float64__(0.1)
+    mov qword[rsp-688], rax
+    movlpd xmm1, qword[rsp-688]
+    ; =
+    movlpd qword[rbp-680], xmm1
+    ; num2
+    movlpd xmm1, [rbp-680]
+    ; print
+    sub rsp, 1376
+    movlpd [rsp], xmm1
+    movlpd xmm0, [rsp]
+    call printFloat
+    add rsp, 1376
+    ; 3.14159
+    mov rax, __float64__(3.14159)
+    mov qword[rsp-696], rax
+    movlpd xmm1, qword[rsp-696]
+    ; =
+    movlpd qword[rbp-688], xmm1
+    ; num3
+    movlpd xmm1, [rbp-688]
+    ; print
+    sub rsp, 1392
+    movlpd [rsp], xmm1
+    movlpd xmm0, [rsp]
+    call printFloat
+    add rsp, 1392
+    ; num2
+    movlpd xmm1, [rbp-680]
+    ; num3
+    movlpd xmm2, [rbp-688]
+    ; +
+    movlpd [rsp-704], xmm1
+    movlpd xmm0, [rsp-704]
+    addsd xmm0, xmm2
+    movlpd [rsp-704], xmm0
+    movlpd xmm1, [rsp-704]
+    ; =
+    movlpd qword[rbp-696], xmm1
+    ; num4
+    movlpd xmm1, [rbp-696]
+    ; print
+    sub rsp, 1408
+    movlpd [rsp], xmm1
+    movlpd xmm0, [rsp]
+    call printFloat
+    add rsp, 1408
+    ; num2
+    movlpd xmm1, [rbp-680]
+    ; num3
+    movlpd xmm2, [rbp-688]
+    ; *
+    movlpd [rsp-712], xmm1
+    movlpd xmm0, [rsp-712]
+    mulsd xmm0, xmm2
+    movlpd [rsp-712], xmm0
+    movlpd xmm1, [rsp-712]
+    ; =
+    movlpd qword[rbp-704], xmm1
+    ; num5
+    movlpd xmm1, [rbp-704]
+    ; print
+    sub rsp, 1424
+    movlpd [rsp], xmm1
+    movlpd xmm0, [rsp]
+    call printFloat
+    add rsp, 1424
 
 exit:
     mov rax, 60

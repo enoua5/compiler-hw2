@@ -4,11 +4,11 @@ import src.productions
 from src.ast import build_ir, ir_to_string, simplify_ir
 from src.compile import compile
 
-# BAD_FILE = "ll1_invalid_book.txt"
+BAD_FILE = "files/reject.txt"
 # GOOD_FILE = "ll1_valid_class.txt"
 # BOOK_FILE = "ll1_valid_book.txt"
 # TO_IR_FILE = "ll1_to_ir.txt"
-GOOD_FILE = "files/accept-2-no-flum.txt"
+GOOD_FILE = "files/accept-2.txt"
 OUT_FILE = "out.nasm"
 
 def verify(file):
@@ -37,7 +37,5 @@ def print_table(table):
         print()
 
 if __name__ == '__main__':
-    table, *ignore = src.productions.get_table()
-
     verify(GOOD_FILE)
     #verify(BAD_FILE)

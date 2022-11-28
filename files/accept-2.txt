@@ -22,7 +22,7 @@ num var11 = 5 + 4 * 3
 print(var11)
 num var12 = 12 + 34 * 45
 print(var12)
-num var13 = (4 / 5)
+num var13 = (5 / 4)
 print(var13)
 num var14 = 2 * 2 + 5 * 5
 print(var14)
