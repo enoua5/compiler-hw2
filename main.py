@@ -1,41 +1,32 @@
-from src.token import tokenize
-from src.parser import verify_valid, build_tree
-import src.productions
-from src.ast import build_ir, ir_to_string, simplify_ir
+import argparse
+import sys
+
+def getArgs():
+    parser = argparse.ArgumentParser(description="Compiler the CS6820 programming language.")
+    parser.add_argument('file', help="File to compile.")
+    parser.add_argument('-o', dest="out_file", action='store', default='out.nasm', help="File to output to")
+    return parser.parse_args()
+
+
 from src.compile import compile
 
-BAD_FILE = "files/reject.txt"
-# GOOD_FILE = "ll1_valid_class.txt"
-# BOOK_FILE = "ll1_valid_book.txt"
-# TO_IR_FILE = "ll1_to_ir.txt"
-GOOD_FILE = "files/accept-2.txt"
-OUT_FILE = "out.nasm"
+if __name__ == '__main__':
+    args = getArgs()
 
-def verify(file):
-    asm = compile(file)
+    try:
+        asm = compile(args.file)
+    except FileNotFoundError:
+        print("File could not be opened.")
+        sys.exit(1)
+
     if asm is None:
         print("Failed to compile")
+        sys.exit(1)
     else:
-        f = open(OUT_FILE, 'w')
-        f.write(asm)
-        f.close()
-
-
-
-
-def print_table(table):
-    print(" "*13, end="  ")
-    print("EOF".rjust(6), end="  ")
-    for i in src.productions.Terminal:
-        print(i.name.rjust(6), end="  ")
-    print()
-    for nt in src.productions.Nonterminal:
-        print(nt.name.rjust(13), end="  ")
-        print(str(table[(nt, src.productions.SpecialSymbols.EOF)]).rjust(7), end="  ")
-        for t in src.productions.Terminal:
-            print(str(table[(nt, t)]).rjust(6), end="  ")
-        print()
-
-if __name__ == '__main__':
-    verify(GOOD_FILE)
-    #verify(BAD_FILE)
+        try:
+            f = open(args.out_file, 'w')
+            f.write(asm)
+            f.close()
+        except FileNotFoundError:
+            print("Output file could not be opened.")
+            sys.exit(1)
