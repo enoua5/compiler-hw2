@@ -1,8 +1,7 @@
 
-from src.token import tokenize
-from src.parser import build_tree
-from src.ast import build_ir, ir_to_string
-from src.symbol_table import SymbolTable, VarType, VariableInfo, AlreadyDefinedException, term_to_type
+from src.tokenizer import tokenize
+from src.parse import build_tree
+from src.tree import build_ir, ir_to_string
 from src.token_enums import Terminal, TokenType, Token
 
 CALC_REGISTER_ORDER = [
@@ -13,12 +12,15 @@ CALC_REGISTER_ORDER = [
     "r8",
     "r9",
     "r10",
-    "r11",
-    "r12",
-    "r13",
     "r14",
     "r15",
 ]
+
+PARAM_REGISTERS = {
+    "param1": "r11",
+    "param2": "r12",
+    "param3": "r13",
+}
 
 FLUM_REGISTER_ORDER = [
     "xmm1",
@@ -37,6 +39,8 @@ FLUM_REGISTER_ORDER = [
     "xmm14",
     "xmm15",
 ]
+
+from src.symbol_table import SymbolTable, VarType, VariableInfo, AlreadyDefinedException, term_to_type
 
 class RegStack:
     def __init__(self, real_stack_base:int):
@@ -179,6 +183,8 @@ def compile(file)->str|None:
     table = SymbolTable()
 
     for line_num, line in enumerate(lines):
+        print('----')
+        print(str(line_num).rjust(4,'0'),":",line)
         try:
             token_list = tokenize(line)
             
@@ -198,6 +204,7 @@ def compile(file)->str|None:
             continue
 
         ir = build_ir(tree, [])
+        print(ir)
         if len(ir) == 0:
             continue
 
@@ -290,7 +297,12 @@ def compile(file)->str|None:
 
                     if token.text == '=':
                         asm += "    ; =\n"
-                        a, a_type = expr_stack.pop()
+                        try:
+                            a, a_type = expr_stack.pop()
+                        except:
+                            print("Malformed expression on line",line_num)
+                            error_free = False
+                            break
                         if assignment_location.type != a_type:
                             print("Mismatch of types in assignment on line "+str(line_num))
                             error_free = False
@@ -303,9 +315,14 @@ def compile(file)->str|None:
 
 
                         continue
-
-                    a, a_type = expr_stack.pop()
-                    b, b_type = expr_stack.pop()
+                    
+                    try:
+                        a, a_type = expr_stack.pop()
+                        b, b_type = expr_stack.pop()
+                    except:
+                        print("Malformed expression on line",line_num)
+                        error_free = False
+                        break
                     if a_type != b_type:
                         print("Type mismatch on line "+str(line_num))
                         error_free = False
@@ -396,11 +413,26 @@ def compile(file)->str|None:
                             asm += "    movlpd [rsp-"+str(expr_stack.rsp_needed())+"], xmm0\n"
                             asm += "    movlpd "+next_loc+", [rsp-"+str(expr_stack.rsp_needed())+"]\n"
 
-                
+                elif token.type == TokenType.L_CURL:
+                    table.new_scope()
+
+                elif token.type == TokenType.R_CURL:
+                    pop_success = table.pop_scope()
+                    if not pop_success:
+                        table.new_scope()
+                        print("Unexpected end of scope on line",line_num)
+                        error_free = False
+                        break
+
                 else:
                     if token.type == TokenType.UNARY_NEGATIVE:
                         asm += "    ; *-1\n"
-                        a, a_type = expr_stack.pop()
+                        try:
+                            a, a_type = expr_stack.pop()
+                        except:
+                            print("Malformed expression on line",line_num)
+                            error_free = False
+                            break
                         if a_type == VarType.NUM:
                             asm += "    mov rax, -1\n"
                             asm += "    mov edx, eax\n"
@@ -422,7 +454,12 @@ def compile(file)->str|None:
 
             else:
                 if token == Terminal.KW_PRINT:
-                    a, a_type = expr_stack.pop()
+                    try:
+                        a, a_type = expr_stack.pop()
+                    except:
+                        print("Malformed expression on line",line_num)
+                        error_free = False
+                        break
 
                     asm += "    ; print\n"
                     # TODO ??????????????????????????????????????????????????????

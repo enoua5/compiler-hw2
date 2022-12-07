@@ -5,6 +5,12 @@ KEYWORDS = {
     "print": Terminal.KW_PRINT,
     "flum": Terminal.KW_FLUM,
     "num": Terminal.KW_NUM,
+    "if": Terminal.KW_IF,
+    "function": Terminal.KW_FUNCTION,
+    "gift": Terminal.KW_GIFT,
+    "param1": Terminal.KW_PARAM1,
+    "param2": Terminal.KW_PARAM2,
+    "param3": Terminal.KW_PARAM3,
 }
 SUBTRACT_AFTER = [TokenType.NUMBER, TokenType.NAME, TokenType.R_PAREN]
 DIGITS = "1234567890."
@@ -95,7 +101,10 @@ def tokenize(line):
             prev_type = type
         elif c == '(':
             #print("PAREN")
-            type =  TokenType.L_PAREN
+            if prev_type == TokenType.NAME:
+                type = TokenType.L_CALL_PAREN
+            else:
+                type =  TokenType.L_PAREN
             yield TermTokPair(Token(c, type))
             prev_type = type
         elif c == ')':
@@ -103,6 +112,19 @@ def tokenize(line):
             type =  TokenType.R_PAREN
             yield TermTokPair(Token(c, type))
             prev_type = type
+        elif c == '{':
+            type = TokenType.L_CURL
+            yield TermTokPair(Token(c, type))
+            prev_type = type
+        elif c == '}':
+            type = TokenType.R_CURL
+            yield TermTokPair(Token(c, type))
+            prev_type = type
+        elif c == ',':
+            type = TokenType.COMMA
+            yield TermTokPair(Token(c, type))
+            prev_type = type
+
         elif not c.isspace():
             raise SyntaxError("Unexpected character '"+c+"'")
 

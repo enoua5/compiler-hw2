@@ -1,5 +1,6 @@
 from enum import Enum, auto
 from src.token_enums import Terminal
+from src.compile import PARAM_REGISTERS
 
 class VarType(Enum):
     NUM = auto()
@@ -51,13 +52,18 @@ class SymbolTable:
         self.table = [Scope(0)]
 
     def new_scope(self)->None:
-        last_end = self.table[-1].end_offset
+        try:
+            last_end = self.table[-1].end_offset
+        except:
+            last_end = 0
         self.table.append(Scope(last_end))
 
     # a False return value indicates that the global scope has been popped
     def pop_scope(self)->bool:
         try:
             self.table.pop()
+            if len(self.table) == 0:
+                return False
             return True
         except IndexError:
             return False

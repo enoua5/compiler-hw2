@@ -1,4 +1,4 @@
-from src.parser import Node
+from src.parse import Node
 from src.token_enums import Terminal, Nonterminal, Token, TokenType
 
 USELESS_TERMS = [Terminal.L_PAREN.value, Terminal.R_PAREN.value]

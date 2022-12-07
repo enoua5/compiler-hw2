@@ -1,5 +1,4 @@
-from src.productions import SpecialSymbols, Terminal, Nonterminal, get_table, Token
-from src.token import TermTokPair
+from src.productions import SpecialSymbols, Terminal, Nonterminal, get_table
 
 LOOKAHEAD, PROD = get_table()
 

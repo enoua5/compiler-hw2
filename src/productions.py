@@ -25,6 +25,10 @@ def get_class_productions():
     cfg.add_production(Nonterminal.GOAL, [Nonterminal.DECLARATION])
     cfg.add_production(Nonterminal.GOAL, [Nonterminal.ASSIGNMENT])
     cfg.add_production(Nonterminal.GOAL, [Nonterminal.PRINT])
+    cfg.add_production(Nonterminal.GOAL, [Nonterminal.IF_STATEMENT])
+    cfg.add_production(Nonterminal.GOAL, [Nonterminal.FUNCTION_DECL])
+    cfg.add_production(Nonterminal.GOAL, [Nonterminal.RETURN])
+    cfg.add_production(Nonterminal.GOAL, [Terminal.R_CURL])
     cfg.add_production(Nonterminal.GOAL, [SpecialSymbols.EMPTY])
 
     cfg.add_production(Nonterminal.DECLARATION, [Nonterminal.TYPE_NAME, Terminal.NAME, Nonterminal.DECLARATION_])
@@ -32,6 +36,9 @@ def get_class_productions():
     cfg.add_production(Nonterminal.DECLARATION_, [Terminal.EQ, Nonterminal.EXPR])
     cfg.add_production(Nonterminal.ASSIGNMENT, [Terminal.NAME, Terminal.EQ, Nonterminal.EXPR])
     cfg.add_production(Nonterminal.PRINT, [Terminal.KW_PRINT, Terminal.L_PAREN, Nonterminal.EXPR, Terminal.R_PAREN])
+    cfg.add_production(Nonterminal.IF_STATEMENT, [Terminal.KW_IF, Terminal.L_PAREN, Nonterminal.EXPR, Terminal.R_PAREN, Terminal.L_CURL])
+    cfg.add_production(Nonterminal.FUNCTION_DECL, [Terminal.KW_FUNCTION, Terminal.NAME, Terminal.L_CALL_PAREN, Terminal.R_PAREN, Terminal.L_CURL])
+    cfg.add_production(Nonterminal.RETURN, [Terminal.KW_GIFT, Nonterminal.EXPR])
 
     cfg.add_production(Nonterminal.TYPE_NAME, [Terminal.KW_NUM])
     cfg.add_production(Nonterminal.TYPE_NAME, [Terminal.KW_FLUM])
@@ -62,10 +69,22 @@ def get_class_productions():
 
     cfg.add_production(Nonterminal.FACTOR, [Terminal.L_PAREN, Nonterminal.EXPR, Terminal.R_PAREN])
     cfg.add_production(Nonterminal.FACTOR, [Terminal.NUMBER])
-    cfg.add_production(Nonterminal.FACTOR, [Terminal.NAME])
+    cfg.add_production(Nonterminal.FACTOR, [Terminal.NAME, Nonterminal.NAME_POST])
+    cfg.add_production(Nonterminal.FACTOR, [Terminal.KW_PARAM1])
+    cfg.add_production(Nonterminal.FACTOR, [Terminal.KW_PARAM2])
+    cfg.add_production(Nonterminal.FACTOR, [Terminal.KW_PARAM3])
+
+    cfg.add_production(Nonterminal.NAME_POST, [SpecialSymbols.EMPTY])
+    cfg.add_production(Nonterminal.NAME_POST, [Nonterminal.FUNCTION_CALL])
+    cfg.add_production(Nonterminal.FUNCTION_CALL, [Terminal.L_CALL_PAREN, Nonterminal.PARAMETER_LIST, Terminal.R_PAREN])
+    cfg.add_production(Nonterminal.PARAMETER_LIST, [SpecialSymbols.EMPTY])
+    cfg.add_production(Nonterminal.PARAMETER_LIST, [Nonterminal.EXPR, Nonterminal.PARAMETER_LIST_])
+    cfg.add_production(Nonterminal.PARAMETER_LIST_, [SpecialSymbols.EMPTY])
+    cfg.add_production(Nonterminal.PARAMETER_LIST_, [Terminal.COMMA, Nonterminal.PARAMETER_LIST])
 
     return cfg
 
+"""
 def get_hw3_productions():
     cfg = CFG()
 
@@ -124,6 +143,7 @@ def get_book_productions():
     cfg.add_production(Nonterminal.FACTOR, [Terminal.NAME])
 
     return cfg
+"""
 
 def get_FIRST():
     FIRST = {}
@@ -256,6 +276,10 @@ def get_table():
                 if type(w) is not Terminal:
                     continue
                 if table.get((A,w)) not in [-1, None, p]:
+                    print(FIRST_P[p])
+                    print(p,'=',prod[p])
+                    print(table.get((A,w)),'=',prod[table.get((A,w))])
+                    print("table at", (A,w), "already contains",table.get((A,w)),"cannot place",p)
                     raise Exception("BACKTRACK DEPENDENCY DETECTED! PANIC!")
                 table[(A,w)] = p
             if SpecialSymbols.EOF in FIRST_P[p]:
