@@ -1,0 +1,11 @@
+function test() {
+    num number = param1 + param2
+    print(number)
+    gift number
+}
+function test2() {
+    gift 1
+}
+num value = test(1, 2)
+num value2 = test2()
+num value3 = test(test2(test))
