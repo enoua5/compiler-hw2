@@ -9,7 +9,6 @@ flumberPrinter db "%g", 10, 0
 section .text
 printFloat:
     push    rbp                     ; Avoid stack alignment issues
-    push    rsp
     push    rcx
     push    rdx
     push    rsi
@@ -32,14 +31,12 @@ printFloat:
     pop     rsi
     pop     rdx
     pop     rcx
-    pop     rsp
     pop     rbp                     ; Avoid stack alignment issues
     ret
 
 
 printInt:
     push    rbp                     ; Avoid stack alignment issues
-    push    rsp
     push    rax
     push    rcx
     push    rdx
@@ -69,16 +66,17 @@ printInt:
     pop     rdx
     pop     rcx
     pop     rax
-    pop     rsp
     pop     rbp                     ; Avoid stack alignment issues
     ret
 main:
 	push	rbp
 	mov	    rbp, rsp
+    sub     rsp, 100 ; TODO replace with calculated value
     jmp end_function_test
 function_test:
     push rbp
     mov rbp, rsp
+    sub rsp, 100 ; TODO replace with calculated value
     ; param1 
     ; param2 
     ; +
@@ -86,38 +84,39 @@ function_test:
     add rax, r12
     mov r14, rax
     ; =
-    mov qword[rbp-0], r14
+    mov qword[rbp-8], r14
     ; number
-    mov rcx, [rbp-0]
+    mov rcx, [rbp-8]
     ; print
-    sub rsp, 16
     mov rax, rcx
     call printInt
-    add rsp, 16
     ; number
-    mov rcx, [rbp-0]
+    mov rcx, [rbp-8]
     ; gift
     mov rax, rcx
+    add rsp, 100 ; TODO replace with calculated value
     pop rbp
     ret
     ; prepare to exit function
+    add rsp, 100 ; TODO replace with calculated value
     pop rbp
-    pop rsp
     ret
 end_function_test:
     jmp end_function_test2
 function_test2:
     push rbp
     mov rbp, rsp
+    sub rsp, 100 ; TODO replace with calculated value
     ; 1
     mov rcx, 1
     ; gift
     mov rax, rcx
+    add rsp, 100 ; TODO replace with calculated value
     pop rbp
     ret
     ; prepare to exit function
+    add rsp, 100 ; TODO replace with calculated value
     pop rbp
-    pop rsp
     ret
 end_function_test2:
     ; preparing to call test
@@ -133,27 +132,23 @@ end_function_test2:
     call function_test
     mov rcx, rax
     ; =
-    mov qword[rbp-0], rcx
+    mov qword[rbp-8], rcx
     ; value
-    mov rcx, [rbp-0]
+    mov rcx, [rbp-8]
     ; print
-    sub rsp, 16
     mov rax, rcx
     call printInt
-    add rsp, 16
     ; preparing to call test2
     ; call
     call function_test2
     mov rcx, rax
     ; =
-    mov qword[rbp-8], rcx
+    mov qword[rbp-16], rcx
     ; value2
-    mov rcx, [rbp-8]
+    mov rcx, [rbp-16]
     ; print
-    sub rsp, 32
     mov rax, rcx
     call printInt
-    add rsp, 32
     ; preparing to call test
     ; preparing to call test2
     ; call
@@ -161,20 +156,59 @@ end_function_test2:
     mov rcx, rax
     ; add as param
     mov r11, rcx
+    ; 1
+    mov rcx, 1
+    ; add as param
+    mov r12, rcx
     ; call
     call function_test
     mov rcx, rax
     ; =
-    mov qword[rbp-16], rcx
+    mov qword[rbp-24], rcx
     ; value3
-    mov rcx, [rbp-16]
+    mov rcx, [rbp-24]
     ; print
-    sub rsp, 48
     mov rax, rcx
     call printInt
-    add rsp, 48
+    ; 1
+    mov rcx, 1
+    ; =
+    mov qword[rbp-32], rcx
+    ; bool
+    mov rcx, [rbp-32]
+    ; if
+    mov rax, rcx
+    jz end_if_0
+    ; 42
+    mov rcx, 42
+    ; print
+    mov rax, rcx
+    call printInt
+end_if_0:
+    ; bool
+    mov rcx, [rbp-32]
+    ; 1
+    mov rbx, 1
+    ; -
+    mov rax, rcx
+    sub rax, rbx
+    mov rcx, rax
+    ; =
+    mov qword[rbp-32], rcx
+    ; bool
+    mov rcx, [rbp-32]
+    ; if
+    mov rax, rcx
+    jz end_if_1
+    ; 24
+    mov rcx, 24
+    ; print
+    mov rax, rcx
+    call printInt
+end_if_1:
 
 exit:
+    add     rsp, 100 ; TODO replace with calculated value
     mov rax, 60
     xor rdi, rdi
     syscall

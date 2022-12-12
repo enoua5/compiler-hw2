@@ -10,5 +10,14 @@ num value = test(1, 2)
 print(value)
 num value2 = test2()
 print(value2)
-num value3 = test(test2())
+num value3 = test(test2(), 1)
 print(value3)
+
+num bool = 1
+if(bool){
+    print(42)
+}
+bool = bool - 1
+if(bool){
+    print(24)
+}

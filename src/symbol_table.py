@@ -22,7 +22,7 @@ class VariableInfo:
 
     def __init__(self, type: VarType, offset: int):
         self.type = type
-        self.offset = offset
+        self.offset = offset + 1
 
 class Scope:
     vars: dict[VariableInfo]

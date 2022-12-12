@@ -3,7 +3,7 @@ from src.token_enums import Terminal, Nonterminal, Token, TokenType
 
 USELESS_TERMS = [Terminal.L_PAREN.value, Terminal.R_PAREN.value]
 OPERATORS = [Terminal.DIV.value, Terminal.MULT.value, Terminal.PLUS.value, Terminal.MINUS.value, Terminal.EXPON.value, Terminal.NEG.value, Terminal.EQ.value, Terminal.L_CALL_PAREN.value]
-INCLUDED_KEYWORDS = [Terminal.KW_FLUM, Terminal.KW_NUM, Terminal.KW_PRINT, Terminal.KW_GIFT, Terminal.KW_PARAM1, Terminal.KW_PARAM2, Terminal.KW_PARAM3, Terminal.KW_FUNCTION]
+INCLUDED_KEYWORDS = [Terminal.KW_FLUM, Terminal.KW_NUM, Terminal.KW_PRINT, Terminal.KW_GIFT, Terminal.KW_PARAM1, Terminal.KW_PARAM2, Terminal.KW_PARAM3, Terminal.KW_FUNCTION, Terminal.KW_IF]
 APPENDED_KEYWORDS = [Terminal.KW_PRINT, Terminal.KW_GIFT]
 
 def ir_to_string(ir):
@@ -70,7 +70,7 @@ def build_ir(parse_tree, ir_stack):
                 index = -1
                 while True:
                     index = ir.index(Terminal.L_CALL_PAREN.value, index+1)
-                    if index > 0 and ir[index-1].type != TokenType.NAME:
+                    if index > 0:
                         ir = ir[:index] + [Terminal.COMMA.value] + ir[index:]
                         index += 1
             except:

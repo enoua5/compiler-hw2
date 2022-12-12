@@ -58,7 +58,8 @@ class RegStack:
         if len(CALC_REGISTER_ORDER) > self.num_stack_length:
             place = CALC_REGISTER_ORDER[self.num_stack_length]
         else:
-            place = "[rbp-"+str(self.real_stack_base + self.nums_on_real_stack + self.flums_on_real_stack)+"]"
+            # TODO this is incorrect
+            place = "[rbp-"+str(self.real_stack_base + self.nums_on_real_stack + self.flums_on_real_stack + 1)+"]"
             self.nums_on_real_stack += 1
 
         self.locations_used.append(place)
@@ -70,7 +71,8 @@ class RegStack:
         if len(FLUM_REGISTER_ORDER) > self.flum_stack_length:
             place = FLUM_REGISTER_ORDER[self.flum_stack_length]
         else:
-            place = "[rbp-"+str(self.real_stack_base + self.nums_on_real_stack + self.flums_on_real_stack)+"]"
+            # TODO this is incorrect
+            place = "[rbp-"+str(self.real_stack_base + self.nums_on_real_stack + self.flums_on_real_stack + 1)+"]"
             self.nums_on_real_stack += 1
 
         self.locations_used.append(place)
@@ -118,7 +120,6 @@ flumberPrinter db "%g", 10, 0
 section .text
 printFloat:
     push    rbp                     ; Avoid stack alignment issues
-    push    rsp
     push    rcx
     push    rdx
     push    rsi
@@ -141,14 +142,12 @@ printFloat:
     pop     rsi
     pop     rdx
     pop     rcx
-    pop     rsp
     pop     rbp                     ; Avoid stack alignment issues
     ret
 
 
 printInt:
     push    rbp                     ; Avoid stack alignment issues
-    push    rsp
     push    rax
     push    rcx
     push    rdx
@@ -178,16 +177,17 @@ printInt:
     pop     rdx
     pop     rcx
     pop     rax
-    pop     rsp
     pop     rbp                     ; Avoid stack alignment issues
     ret
 main:
 	push	rbp
 	mov	    rbp, rsp
+    sub     rsp, 1000 ; TODO replace with calculated value
 """
 
 ASM_TAIL = """
 exit:
+    add     rsp, 1000 ; TODO replace with calculated value
     mov rax, 60
     xor rdi, rdi
     syscall
@@ -204,6 +204,7 @@ def compile(file)->str|None:
 
     table = SymbolTable()
     function_list = []
+    if_label_count = 0
     end_label_stack = []
 
     for line_num, line in enumerate(lines):
@@ -270,7 +271,7 @@ def compile(file)->str|None:
         ir_iter = iter(ir)
         for token in ir_iter:
             if first_token is None:
-                first_token = first_token
+                first_token = token
 
             if type(token) == Token:
                 if token.type == TokenType.NAME:
@@ -452,6 +453,16 @@ def compile(file)->str|None:
                 elif token.type == TokenType.L_CURL:
                     table.new_scope()
 
+                    if first_token == Terminal.KW_IF:
+                        a, a_type = expr_stack.pop()
+                        asm += "    ; if\n"
+                        asm += "    cmp "+a+", 0\n"
+                        end_label = "end_if_"+str(if_label_count)
+                        if_label_count += 1 
+                        asm += "    jz "+end_label+"\n"
+                        end_label_stack.append(end_label)
+                        print(end_label_stack)
+
                 elif token.type == TokenType.R_CURL:
                     pop_success = table.pop_scope()
                     if not pop_success:
@@ -463,41 +474,50 @@ def compile(file)->str|None:
 
                     if end_label.startswith("end_function"):
                         asm += "    ; prepare to exit function\n"
+                        asm += "    add rsp, 1000 ; TODO replace with calculated value\n"
                         asm += "    pop rbp\n"
-                        asm += "    pop rsp\n"
                         asm += "    ret\n"
 
                     asm += end_label+":\n"
 
                 elif token.type == TokenType.COMMA:
-                        asm += "    ; add as param\n"
-                        try:
-                            a, a_type = expr_stack.pop()
-                        except:
-                            print("Malformed expression on line",line_num)
-                            error_free = False
-                            break
-                        if a_type != VarType.NUM:
-                            print("Error on line",line_num,": only nums can be passed as a parameter")
-                            error_free = False
-                            break
-                        try:
-                            param_loc = function_call_stack[-1].next_location()
-                            if param_loc is None:
-                                print("More than max arguments supplied to function on line",line_num)
+                        if type(prev_token) == Token and prev_token.type == TokenType.NAME and prev_token.text in function_list:
+                            pass
+                        else:
+                            asm += "    ; add as param\n"
+                            try:
+                                a, a_type = expr_stack.pop()
+                            except:
+                                print("Malformed expression on line",line_num)
                                 error_free = False
                                 break
-                            asm += "    mov "+param_loc+", "+a+"\n"
+                            if a_type != VarType.NUM:
+                                print("Error on line",line_num,": only nums can be passed as a parameter")
+                                error_free = False
+                                break
+                            try:
+                                param_loc = function_call_stack[-1].next_location()
+                                if param_loc is None:
+                                    print("More than max arguments supplied to function on line",line_num)
+                                    error_free = False
+                                    break
+                                asm += "    mov "+param_loc+", "+a+"\n"
 
-                        except Exception as e:
-                            print("Malformed expression on line",line_num)
-                            error_free = False
-                            break
+                            except Exception as e:
+                                print("Malformed expression on line",line_num)
+                                error_free = False
+                                break
                 
                 elif token.type == TokenType.L_CALL_PAREN:
                     asm += "    ; call\n"
                     function_to_call = function_call_stack.pop().name
+                    asm += "    push r11\n"
+                    asm += "    push r12\n"
+                    asm += "    push r13\n"
                     asm += "    call function_"+function_to_call+"\n"
+                    asm += "    pop r13\n"
+                    asm += "    pop r12\n"
+                    asm += "    pop r11\n"
                     next_loc = expr_stack.next_num()
                     if next_loc[0] == "[":
                         next_loc = "qword"+next_loc
@@ -541,7 +561,7 @@ def compile(file)->str|None:
 
                     asm += "    ; print\n"
                     # TODO ??????????????????????????????????????????????????????
-                    asm += "    sub rsp, "+str(expr_stack.rsp_needed()*2)+"\n"
+                    # asm += "    sub rsp, "+str(expr_stack.rsp_needed()*2)+"\n"
                     if a_type == VarType.NUM:
                         asm += "    mov rax, "+a+"\n"
                         asm += "    call printInt\n"
@@ -554,7 +574,7 @@ def compile(file)->str|None:
                         asm += "    call printFloat\n"
 
                     
-                    asm += "    add rsp, "+str(expr_stack.rsp_needed()*2)+"\n"
+                    # asm += "    add rsp, "+str(expr_stack.rsp_needed()*2)+"\n"
 
                 if token == Terminal.KW_FUNCTION:
                     function_name = next(ir_iter)
@@ -575,7 +595,7 @@ def compile(file)->str|None:
                     asm += "function_"+function_name+":\n"
                     asm += "    push rbp\n"
                     asm += "    mov rbp, rsp\n"
-
+                    asm += "    sub rsp, 1000 ; TODO replace with calculated value\n"
 
                 if token == Terminal.KW_PARAM1:
                     asm += "    ; param1 \n"
@@ -603,6 +623,7 @@ def compile(file)->str|None:
                         error_free = False
                         break
                     asm += "    mov rax, "+a+"\n"
+                    asm += "    add rsp, 1000 ; TODO replace with calculated value\n"
                     asm += "    pop rbp\n"
                     asm += "    ret\n"
 
