@@ -96,6 +96,16 @@ class RegStack:
     def rsp_needed(self) -> int:
         return (self.real_stack_base + self.flums_on_real_stack + self.nums_on_real_stack)*8
 
+class FunctionCallInfo:
+    def __init__(self, name:str):
+        self.name = name
+        self.param_count = 0
+    def next_location(self) -> str|None:
+        if self.param_count >= len(PARAM_REGISTERS):
+            return None
+        self.param_count += 1
+        reg = PARAM_REGISTERS["param"+str(self.param_count)]
+        return reg
 
 ASM_HEADER = """
     GLOBAL main
@@ -108,6 +118,7 @@ flumberPrinter db "%g", 10, 0
 section .text
 printFloat:
     push    rbp                     ; Avoid stack alignment issues
+    push    rsp
     push    rcx
     push    rdx
     push    rsi
@@ -119,6 +130,7 @@ printFloat:
 
     mov     rdi, flumberPrinter
     mov     rax, 1                  ; 1 non-int arg
+    and     rsp, -16                ; align to avoid a segfault
     call    [rel printf wrt ..got]
     
     pop     r11
@@ -129,12 +141,15 @@ printFloat:
     pop     rsi
     pop     rdx
     pop     rcx
+    pop     rsp
     pop     rbp                     ; Avoid stack alignment issues
     ret
 
 
 printInt:
     push    rbp                     ; Avoid stack alignment issues
+    push    rsp
+    push    rax
     push    rcx
     push    rdx
     push    rsi
@@ -143,12 +158,17 @@ printInt:
     push    r9
     push    r10
     push    r11
+    push    r12
 
     mov     rdi, numberPrinter      ; set printf format parameter
     mov     rsi, rax                ; set printf value paramete
     xor     rax, rax                ; set rax to 0 (number of float/vector regs used is 0)
+    mov     r12, rsp                ; r12 is preserved according to ABI, so we save our rsp there
+    and     rsp, -16                ; align to avoid a segfault
     call    [rel printf wrt ..got]
+    mov     rsp, r12
     
+    pop     r12
     pop     r11
     pop     r10
     pop     r9
@@ -157,6 +177,8 @@ printInt:
     pop     rsi
     pop     rdx
     pop     rcx
+    pop     rax
+    pop     rsp
     pop     rbp                     ; Avoid stack alignment issues
     ret
 main:
@@ -181,6 +203,8 @@ def compile(file)->str|None:
     error_free = True
 
     table = SymbolTable()
+    function_list = []
+    end_label_stack = []
 
     for line_num, line in enumerate(lines):
         print('----')
@@ -240,35 +264,47 @@ def compile(file)->str|None:
                 continue
         
         expr_stack = RegStack(table.top_of_stack())
-        for token in ir:
+        function_call_stack = []
+        prev_token = None
+        first_token = None
+        ir_iter = iter(ir)
+        for token in ir_iter:
+            if first_token is None:
+                first_token = first_token
+
             if type(token) == Token:
                 if token.type == TokenType.NAME:
-                    asm += "    ; "+token.text+'\n'
-                    var_loc = table.get_info(token.text)
-                    if var_loc is None:
-                        print("Use of undeclared variable, "+token.text+" on line "+str(line_num+1))
-                        error_free = False
-                        break
+                    if token.text in function_list:
+                        asm += "    ; preparing to call " + token.text + '\n'
+                        function_call_stack.append(FunctionCallInfo(token.text))
+                    else:
+                        asm += "    ; "+token.text+'\n'
 
-                    if var_loc.type == VarType.NUM:
-                        next_loc = expr_stack.next_num()
-                        if next_loc[0] == "[":
-                            next_loc = "qword"+next_loc
-                            asm += "    mov rax, [rbp-"+str(var_loc.offset*8)+"]\n"
-                            asm += "    mov "+next_loc+", rax\n"
-                        else:
-                            asm += "    mov "+next_loc+", [rbp-"+str(var_loc.offset*8)+"]\n"
-                    
-                    elif var_loc.type == VarType.FLUM:
-                        next_loc = expr_stack.next_flum()
-                        if next_loc[0] == "[":
-                            next_loc = "qword"+next_loc
+                        var_loc = table.get_info(token.text)
+                        if var_loc is None:
+                            print("Use of undeclared variable, "+token.text+" on line "+str(line_num+1))
+                            error_free = False
+                            break
 
-                            asm += "    mov rax, [rbp-"+str(var_loc.offset*8)+"]\n"
-                            asm += "    mov "+next_loc+", rax\n"
+                        if var_loc.type == VarType.NUM:
+                            next_loc = expr_stack.next_num()
+                            if next_loc[0] == "[":
+                                next_loc = "qword"+next_loc
+                                asm += "    mov rax, [rbp-"+str(var_loc.offset*8)+"]\n"
+                                asm += "    mov "+next_loc+", rax\n"
+                            else:
+                                asm += "    mov "+next_loc+", [rbp-"+str(var_loc.offset*8)+"]\n"
+                        
+                        elif var_loc.type == VarType.FLUM:
+                            next_loc = expr_stack.next_flum()
+                            if next_loc[0] == "[":
+                                next_loc = "qword"+next_loc
 
-                        else:
-                            asm += "    movlpd "+next_loc+", [rbp-"+str(var_loc.offset*8)+"]\n"
+                                asm += "    mov rax, [rbp-"+str(var_loc.offset*8)+"]\n"
+                                asm += "    mov "+next_loc+", rax\n"
+
+                            else:
+                                asm += "    movlpd "+next_loc+", [rbp-"+str(var_loc.offset*8)+"]\n"
 
                     
                 elif token.type == TokenType.NUMBER:
@@ -423,34 +459,76 @@ def compile(file)->str|None:
                         print("Unexpected end of scope on line",line_num)
                         error_free = False
                         break
+                    end_label = end_label_stack.pop()
 
-                else:
-                    if token.type == TokenType.UNARY_NEGATIVE:
-                        asm += "    ; *-1\n"
+                    if end_label.startswith("end_function"):
+                        asm += "    ; prepare to exit function\n"
+                        asm += "    pop rbp\n"
+                        asm += "    pop rsp\n"
+                        asm += "    ret\n"
+
+                    asm += end_label+":\n"
+
+                elif token.type == TokenType.COMMA:
+                        asm += "    ; add as param\n"
                         try:
                             a, a_type = expr_stack.pop()
                         except:
                             print("Malformed expression on line",line_num)
                             error_free = False
                             break
-                        if a_type == VarType.NUM:
-                            asm += "    mov rax, -1\n"
-                            asm += "    mov edx, eax\n"
-                            asm += "    mov rax, "+a+"\n"
-                            asm += "    imul eax, edx\n"
-                            next_loc = expr_stack.next_num()
-                            if next_loc[0] == "[":
-                                next_loc = "qword"+next_loc
-                            asm += "    mov "+next_loc+", rax\n"
-                        elif a_type == VarType.FLUM:
-                            asm += "    mov [rsp-"+str(expr_stack.rsp_needed())+"], __float64__(-1)\n"
-                            asm += "    movlpd xmm0, [rsp-"+str(expr_stack.rsp_needed())+"]\n"
-                            asm += "    mulsd xmm0, "+a+"\n"
+                        if a_type != VarType.NUM:
+                            print("Error on line",line_num,": only nums can be passed as a parameter")
+                            error_free = False
+                            break
+                        try:
+                            param_loc = function_call_stack[-1].next_location()
+                            if param_loc is None:
+                                print("More than max arguments supplied to function on line",line_num)
+                                error_free = False
+                                break
+                            asm += "    mov "+param_loc+", "+a+"\n"
 
-                            next_loc = expr_stack.next_flum()
-                            if next_loc[0] == "[":
-                                next_loc = "qword"+next_loc
-                            asm += "    movlpd "+next_loc+", xmm0\n"
+                        except Exception as e:
+                            print("Malformed expression on line",line_num)
+                            error_free = False
+                            break
+                
+                elif token.type == TokenType.L_CALL_PAREN:
+                    asm += "    ; call\n"
+                    function_to_call = function_call_stack.pop().name
+                    asm += "    call function_"+function_to_call+"\n"
+                    next_loc = expr_stack.next_num()
+                    if next_loc[0] == "[":
+                        next_loc = "qword"+next_loc
+                    asm += "    mov "+next_loc+", rax\n"
+
+                elif token.type == TokenType.UNARY_NEGATIVE:
+                    asm += "    ; *-1\n"
+                    try:
+                        a, a_type = expr_stack.pop()
+                    except:
+                        print("Malformed expression on line",line_num)
+                        error_free = False
+                        break
+                    if a_type == VarType.NUM:
+                        asm += "    mov rax, -1\n"
+                        asm += "    mov edx, eax\n"
+                        asm += "    mov rax, "+a+"\n"
+                        asm += "    imul eax, edx\n"
+                        next_loc = expr_stack.next_num()
+                        if next_loc[0] == "[":
+                            next_loc = "qword"+next_loc
+                        asm += "    mov "+next_loc+", rax\n"
+                    elif a_type == VarType.FLUM:
+                        asm += "    mov [rsp-"+str(expr_stack.rsp_needed())+"], __float64__(-1)\n"
+                        asm += "    movlpd xmm0, [rsp-"+str(expr_stack.rsp_needed())+"]\n"
+                        asm += "    mulsd xmm0, "+a+"\n"
+
+                        next_loc = expr_stack.next_flum()
+                        if next_loc[0] == "[":
+                            next_loc = "qword"+next_loc
+                        asm += "    movlpd "+next_loc+", xmm0\n"
 
             else:
                 if token == Terminal.KW_PRINT:
@@ -478,6 +556,59 @@ def compile(file)->str|None:
                     
                     asm += "    add rsp, "+str(expr_stack.rsp_needed()*2)+"\n"
 
+                if token == Terminal.KW_FUNCTION:
+                    function_name = next(ir_iter)
+                    if type(function_name) != Token or function_name.type != TokenType.NAME:
+                        print("Expected function name on line", line_num)
+                        error_free = False
+                        break
+                    function_name = function_name.text
+                    if function_name in function_list:
+                        print("Redefinition of function", function_name, "on line", line_num)
+                        error_free = False
+                        break
+
+                    function_list.append(function_name)
+                    end_label_stack.append("end_function_"+function_name)
+
+                    asm += "    jmp end_function_"+function_name+"\n"
+                    asm += "function_"+function_name+":\n"
+                    asm += "    push rbp\n"
+                    asm += "    mov rbp, rsp\n"
+
+
+                if token == Terminal.KW_PARAM1:
+                    asm += "    ; param1 \n"
+                    expr_stack.locations_used.append(PARAM_REGISTERS["param1"])
+                    expr_stack.types.append(VarType.NUM)
+                if token == Terminal.KW_PARAM2:
+                    asm += "    ; param2 \n"
+                    expr_stack.locations_used.append(PARAM_REGISTERS["param2"])
+                    expr_stack.types.append(VarType.NUM)
+                if token == Terminal.KW_PARAM3:
+                    asm += "    ; param3 \n"
+                    expr_stack.locations_used.append(PARAM_REGISTERS["param3"])
+                    expr_stack.types.append(VarType.NUM)
+
+                if token == Terminal.KW_GIFT:
+                    asm += "    ; gift\n"
+                    try:
+                        a, a_type = expr_stack.pop()
+                    except:
+                        print("Malformed expression on line",line_num)
+                        error_free = False
+                        break
+                    if a_type != VarType.NUM:
+                        print("Attempt to return non-num on line",line_num)
+                        error_free = False
+                        break
+                    asm += "    mov rax, "+a+"\n"
+                    asm += "    pop rbp\n"
+                    asm += "    ret\n"
+
+
+            prev_token = token
+
                     
         else:
             continue
@@ -485,7 +616,7 @@ def compile(file)->str|None:
     asm += ASM_TAIL
 
 
-    if error_free:
+    if True:#error_free:
         return asm
     return None
         

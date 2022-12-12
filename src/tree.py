@@ -58,6 +58,28 @@ def simplify_ir(ir):
     return stack
 
 def build_ir(parse_tree, ir_stack):
+    ir = _build_ir(parse_tree, ir_stack)
+
+    if len(ir) > 0:
+        if ir[0] == Terminal.KW_FUNCTION:
+            # don't call a function just because it was defined
+            ir.remove(Terminal.L_CALL_PAREN.value)
+        if Terminal.L_CALL_PAREN.value in ir:
+            # throw in an extra comma at the end of param lsits so we know to add the last expression to the call
+            try:
+                index = -1
+                while True:
+                    index = ir.index(Terminal.L_CALL_PAREN.value, index+1)
+                    if index > 0 and ir[index-1].type != TokenType.NAME:
+                        ir = ir[:index] + [Terminal.COMMA.value] + ir[index:]
+                        index += 1
+            except:
+                # .index() throws an error when something isn't found, so...
+                pass
+
+    return ir
+
+def _build_ir(parse_tree, ir_stack):
 
     left_of_operator = []
     operator = None
@@ -83,15 +105,15 @@ def build_ir(parse_tree, ir_stack):
             remaining.append(child)
         
     for i in left_of_operator:
-        build_ir(i, ir_stack)
+        _build_ir(i, ir_stack)
     if ront is not None:
-        build_ir(ront, ir_stack)
+        _build_ir(ront, ir_stack)
     if operator is not None:
-        build_ir(operator, ir_stack)
+        _build_ir(operator, ir_stack)
     if type(parse_tree.value) == Token:
         ir_stack.append(parse_tree.value)
     for i in remaining:
-        build_ir(i, ir_stack)
+        _build_ir(i, ir_stack)
     if parse_tree.value in INCLUDED_KEYWORDS:
         ir_stack.append(parse_tree.value)
 

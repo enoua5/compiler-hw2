@@ -7,5 +7,8 @@ function test2() {
     gift 1
 }
 num value = test(1, 2)
+print(value)
 num value2 = test2()
-num value3 = test(test2(test))
+print(value2)
+num value3 = test(test2())
+print(value3)
