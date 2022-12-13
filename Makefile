@@ -5,8 +5,8 @@ program: program.o
 program.o: program.nasm
 	nasm -o program.o -felf64 program.nasm
 
-program.nasm: main.py src/* files/accept-5000-2.txt
-	python3 main.py -o program.nasm files/accept-5000-2.txt
+program.nasm: main.py src/* files/accept-6000-2.txt
+	python3 main.py -o program.nasm files/accept-6000-2.txt
 
 test_exe: test.o
 	gcc test.o -o test_exe

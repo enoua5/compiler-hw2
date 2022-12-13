@@ -26,6 +26,7 @@ def get_class_productions():
     cfg.add_production(Nonterminal.GOAL, [Nonterminal.ASSIGNMENT])
     cfg.add_production(Nonterminal.GOAL, [Nonterminal.PRINT])
     cfg.add_production(Nonterminal.GOAL, [Nonterminal.IF_STATEMENT])
+    cfg.add_production(Nonterminal.GOAL, [Nonterminal.WHILE_STATEMENT])
     cfg.add_production(Nonterminal.GOAL, [Nonterminal.FUNCTION_DECL])
     cfg.add_production(Nonterminal.GOAL, [Nonterminal.RETURN])
     cfg.add_production(Nonterminal.GOAL, [Terminal.R_CURL])
@@ -37,6 +38,7 @@ def get_class_productions():
     cfg.add_production(Nonterminal.ASSIGNMENT, [Terminal.NAME, Terminal.EQ, Nonterminal.EXPR])
     cfg.add_production(Nonterminal.PRINT, [Terminal.KW_PRINT, Terminal.L_PAREN, Nonterminal.EXPR, Terminal.R_PAREN])
     cfg.add_production(Nonterminal.IF_STATEMENT, [Terminal.KW_IF, Terminal.L_PAREN, Nonterminal.EXPR, Terminal.R_PAREN, Terminal.L_CURL])
+    cfg.add_production(Nonterminal.IF_STATEMENT, [Terminal.KW_WHILE, Terminal.L_PAREN, Nonterminal.EXPR, Terminal.R_PAREN, Terminal.L_CURL])
     cfg.add_production(Nonterminal.FUNCTION_DECL, [Terminal.KW_FUNCTION, Terminal.NAME, Terminal.L_CALL_PAREN, Terminal.R_PAREN, Terminal.L_CURL])
     cfg.add_production(Nonterminal.RETURN, [Terminal.KW_GIFT, Nonterminal.EXPR])
 

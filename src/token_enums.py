@@ -19,6 +19,7 @@ class Nonterminal(Enum):
     DECLARATION_ = auto()
     ASSIGNMENT = auto()
     IF_STATEMENT = auto()
+    WHILE_STATEMENT = auto()
     FUNCTION_DECL = auto()
     RETURN = auto()
     TYPE_NAME = auto()
@@ -90,3 +91,4 @@ class Terminal(Enum):
     KW_PARAM1 = Token("param1", TokenType.KEYWORD)
     KW_PARAM2 = Token("param2", TokenType.KEYWORD)
     KW_PARAM3 = Token("param3", TokenType.KEYWORD)
+    KW_WHILE = Token("while", TokenType.KEYWORD)

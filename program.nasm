@@ -71,7 +71,7 @@ printInt:
 main:
 	push	rbp
 	mov	    rbp, rsp
-    sub     rsp, 744
+    sub     rsp, 800
     ; 2
     mov rcx, 2
     ; =
@@ -1829,14 +1829,222 @@ end_if_1:
     ; if
     cmp rcx, 0
     jz end_if_2
+    ; 666
+    mov rcx, 666
+    ; =
+    mov qword[rbp-696], rcx
     ; varScope
-    mov rcx, [rbp-688]
+    mov rcx, [rbp-696]
     ; print
     mov rax, rcx
     call printInt
 end_if_2:
     ; varScope
     mov rcx, [rbp-688]
+    ; print
+    mov rax, rcx
+    call printInt
+    ; 10
+    mov rcx, 10
+    ; =
+    mov qword[rbp-696], rcx
+    ; var2
+    mov rcx, [rbp-16]
+    ; while
+while_top_3:
+    cmp rcx, 0
+    jz end_while_3
+    ; var2
+    mov rcx, [rbp-16]
+    ; 1
+    mov rbx, 1
+    ; -
+    mov rax, rcx
+    sub rax, rbx
+    mov rcx, rax
+    ; =
+    mov qword[rbp-16], rcx
+    ; return to top of while loop
+    jmp while_top_3
+end_while_3:
+    ; 4
+    mov rcx, 4
+    ; =
+    mov qword[rbp-704], rcx
+    ; 5
+    mov rcx, 5
+    ; =
+    mov qword[rbp-712], rcx
+    ; varNested1
+    mov rcx, [rbp-704]
+    ; while
+while_top_4:
+    cmp rcx, 0
+    jz end_while_4
+    ; varNested2
+    mov rcx, [rbp-712]
+    ; while
+while_top_5:
+    cmp rcx, 0
+    jz end_while_5
+    ; varNested2
+    mov rcx, [rbp-712]
+    ; print
+    mov rax, rcx
+    call printInt
+    ; varNested2
+    mov rcx, [rbp-712]
+    ; 1
+    mov rbx, 1
+    ; -
+    mov rax, rcx
+    sub rax, rbx
+    mov rcx, rax
+    ; =
+    mov qword[rbp-712], rcx
+    ; return to top of while loop
+    jmp while_top_5
+end_while_5:
+    ; varNested1
+    mov rcx, [rbp-704]
+    ; print
+    mov rax, rcx
+    call printInt
+    ; varNested1
+    mov rcx, [rbp-704]
+    ; 1
+    mov rbx, 1
+    ; -
+    mov rax, rcx
+    sub rax, rbx
+    mov rcx, rax
+    ; =
+    mov qword[rbp-704], rcx
+    ; return to top of while loop
+    jmp while_top_4
+end_while_4:
+    ; 3
+    mov rcx, 3
+    ; =
+    mov qword[rbp-704], rcx
+    ; 3
+    mov rcx, 3
+    ; =
+    mov qword[rbp-712], rcx
+    ; varNested3
+    mov rcx, [rbp-720]
+    ; varNested4
+    mov rcx, [rbp-728]
+    ; 0
+    mov rcx, 0
+    ; =
+    mov qword[rbp-736], rcx
+    ; varNested1
+    mov rcx, [rbp-704]
+    ; while
+while_top_6:
+    cmp rcx, 0
+    jz end_while_6
+    ; 3
+    mov rcx, 3
+    ; =
+    mov qword[rbp-712], rcx
+    ; varNested2
+    mov rcx, [rbp-712]
+    ; while
+while_top_7:
+    cmp rcx, 0
+    jz end_while_7
+    ; 3
+    mov rcx, 3
+    ; =
+    mov qword[rbp-720], rcx
+    ; varNested3
+    mov rcx, [rbp-720]
+    ; while
+while_top_8:
+    cmp rcx, 0
+    jz end_while_8
+    ; 3
+    mov rcx, 3
+    ; =
+    mov qword[rbp-728], rcx
+    ; varNested4
+    mov rcx, [rbp-728]
+    ; while
+while_top_9:
+    cmp rcx, 0
+    jz end_while_9
+    ; varNested1
+    mov rcx, [rbp-704]
+    ; if
+    cmp rcx, 0
+    jz end_if_10
+    ; sumWhile
+    mov rcx, [rbp-736]
+    ; 1
+    mov rbx, 1
+    ; +
+    mov rax, rcx
+    add rax, rbx
+    mov rcx, rax
+    ; =
+    mov qword[rbp-736], rcx
+end_if_10:
+    ; varNested4
+    mov rcx, [rbp-728]
+    ; 1
+    mov rbx, 1
+    ; -
+    mov rax, rcx
+    sub rax, rbx
+    mov rcx, rax
+    ; =
+    mov qword[rbp-728], rcx
+    ; return to top of while loop
+    jmp while_top_9
+end_while_9:
+    ; varNested3
+    mov rcx, [rbp-720]
+    ; 1
+    mov rbx, 1
+    ; -
+    mov rax, rcx
+    sub rax, rbx
+    mov rcx, rax
+    ; =
+    mov qword[rbp-720], rcx
+    ; return to top of while loop
+    jmp while_top_8
+end_while_8:
+    ; varNested2
+    mov rcx, [rbp-712]
+    ; 1
+    mov rbx, 1
+    ; -
+    mov rax, rcx
+    sub rax, rbx
+    mov rcx, rax
+    ; =
+    mov qword[rbp-712], rcx
+    ; return to top of while loop
+    jmp while_top_7
+end_while_7:
+    ; varNested1
+    mov rcx, [rbp-704]
+    ; 1
+    mov rbx, 1
+    ; -
+    mov rax, rcx
+    sub rax, rbx
+    mov rcx, rax
+    ; =
+    mov qword[rbp-704], rcx
+    ; return to top of while loop
+    jmp while_top_6
+end_while_6:
+    ; sumWhile
+    mov rcx, [rbp-736]
     ; print
     mov rax, rcx
     call printInt
@@ -1864,7 +2072,7 @@ end_function_myFunction:
     ; 0
     mov rcx, 0
     ; =
-    mov qword[rbp-696], rcx
+    mov qword[rbp-744], rcx
     ; preparing to call myFunction
     ; call
     push r11
@@ -1876,9 +2084,9 @@ end_function_myFunction:
     pop r11
     mov rcx, rax
     ; =
-    mov qword[rbp-696], rcx
+    mov qword[rbp-744], rcx
     ; varResult
-    mov rcx, [rbp-696]
+    mov rcx, [rbp-744]
     ; print
     mov rax, rcx
     call printInt
@@ -1915,7 +2123,7 @@ end_function_myAddingFunction:
     ; 0
     mov rcx, 0
     ; =
-    mov qword[rbp-704], rcx
+    mov qword[rbp-752], rcx
     ; preparing to call myAddingFunction
     ; 100
     mov rcx, 100
@@ -1939,9 +2147,9 @@ end_function_myAddingFunction:
     pop r11
     mov rcx, rax
     ; =
-    mov qword[rbp-704], rcx
+    mov qword[rbp-752], rcx
     ; varPresent
-    mov rcx, [rbp-704]
+    mov rcx, [rbp-752]
     ; print
     mov rax, rcx
     call printInt
@@ -1994,7 +2202,7 @@ end_function_approxCircleArea:
     ; 0
     mov rcx, 0
     ; =
-    mov qword[rbp-712], rcx
+    mov qword[rbp-760], rcx
     ; preparing to call approxCircleArea
     ; 50
     mov rcx, 50
@@ -2010,9 +2218,9 @@ end_function_approxCircleArea:
     pop r11
     mov rcx, rax
     ; =
-    mov qword[rbp-712], rcx
+    mov qword[rbp-760], rcx
     ; approxArea
-    mov rcx, [rbp-712]
+    mov rcx, [rbp-760]
     ; print
     mov rax, rcx
     call printInt
@@ -2050,22 +2258,22 @@ end_function_cylinderVolume:
     ; 114
     mov rcx, 114
     ; =
-    mov qword[rbp-720], rcx
+    mov qword[rbp-768], rcx
     ; 100
     mov rcx, 100
     ; =
-    mov qword[rbp-728], rcx
+    mov qword[rbp-776], rcx
     ; 0
     mov rcx, 0
     ; =
-    mov qword[rbp-736], rcx
+    mov qword[rbp-784], rcx
     ; preparing to call cylinderVolume
     ; cylinderBaseArea
-    mov rcx, [rbp-720]
+    mov rcx, [rbp-768]
     ; add as param
     mov r11, rcx
     ; cylinderHeight
-    mov rcx, [rbp-728]
+    mov rcx, [rbp-776]
     ; add as param
     mov r12, rcx
     ; call
@@ -2078,9 +2286,9 @@ end_function_cylinderVolume:
     pop r11
     mov rcx, rax
     ; =
-    mov qword[rbp-736], rcx
+    mov qword[rbp-784], rcx
     ; volume
-    mov rcx, [rbp-736]
+    mov rcx, [rbp-784]
     ; print
     mov rax, rcx
     call printInt
@@ -2115,15 +2323,15 @@ end_function_cylinderVolume:
     pop r11
     mov rcx, rax
     ; =
-    mov qword[rbp-736], rcx
+    mov qword[rbp-784], rcx
     ; volume
-    mov rcx, [rbp-736]
+    mov rcx, [rbp-784]
     ; print
     mov rax, rcx
     call printInt
 
 exit:
-    add rsp, 744
+    add rsp, 800
     mov rax, 60
     xor rdi, rdi
     syscall

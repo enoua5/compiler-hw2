@@ -6,6 +6,7 @@ KEYWORDS = {
     "flum": Terminal.KW_FLUM,
     "num": Terminal.KW_NUM,
     "if": Terminal.KW_IF,
+    "while": Terminal.KW_WHILE,
     "function": Terminal.KW_FUNCTION,
     "gift": Terminal.KW_GIFT,
     "param1": Terminal.KW_PARAM1,

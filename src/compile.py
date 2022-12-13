@@ -461,7 +461,16 @@ def compile(file)->str|None:
                         if_label_count += 1 
                         asm += "    jz "+end_label+"\n"
                         end_label_stack.append(end_label)
-                        print(end_label_stack)
+
+                    if first_token == Terminal.KW_WHILE:
+                        a, a_type = expr_stack.pop()
+                        asm += "    ; while\n"
+                        asm += "while_top_"+str(if_label_count)+":\n"
+                        asm += "    cmp "+a+", 0\n"
+                        end_label = "end_while_"+str(if_label_count)
+                        if_label_count += 1 
+                        asm += "    jz "+end_label+"\n"
+                        end_label_stack.append(end_label)
 
                 elif token.type == TokenType.R_CURL:
                     pop_success = table.pop_scope()
@@ -481,6 +490,11 @@ def compile(file)->str|None:
                         function_name = end_label.replace("end_function_", "", 1)
                         asm = asm.replace("!!function "+function_name+" rsp!!", str(local_table.get_rsp_offset()))
                         local_table.clear()
+
+                    if end_label.startswith("end_while"):
+                        top_label = "while_top_"+end_label.replace("end_while_", "", 1)
+                        asm += "    ; return to top of while loop\n"
+                        asm += "    jmp "+top_label+"\n"
 
                     asm += end_label+":\n"
 
