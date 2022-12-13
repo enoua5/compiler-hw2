@@ -71,7 +71,7 @@ printInt:
 main:
 	push	rbp
 	mov	    rbp, rsp
-    sub     rsp, 1000 ; TODO replace with calculated value
+    sub     rsp, 744
     ; 2
     mov rcx, 2
     ; =
@@ -1844,7 +1844,7 @@ end_if_2:
 function_myFunction:
     push rbp
     mov rbp, rsp
-    sub rsp, 1000 ; TODO replace with calculated value
+    sub rsp, 16
     ; 1234
     mov rcx, 1234
     ; =
@@ -1853,11 +1853,11 @@ function_myFunction:
     mov rcx, [rbp-8]
     ; gift
     mov rax, rcx
-    add rsp, 1000 ; TODO replace with calculated value
+    add rsp, 16
     pop rbp
     ret
     ; prepare to exit function
-    add rsp, 1000 ; TODO replace with calculated value
+    add rsp, 16
     pop rbp
     ret
 end_function_myFunction:
@@ -1886,7 +1886,7 @@ end_function_myFunction:
 function_myAddingFunction:
     push rbp
     mov rbp, rsp
-    sub rsp, 1000 ; TODO replace with calculated value
+    sub rsp, 24
     ; param1 
     ; param2 
     ; +
@@ -1904,11 +1904,11 @@ function_myAddingFunction:
     mov rcx, [rbp-8]
     ; gift
     mov rax, rcx
-    add rsp, 1000 ; TODO replace with calculated value
+    add rsp, 24
     pop rbp
     ret
     ; prepare to exit function
-    add rsp, 1000 ; TODO replace with calculated value
+    add rsp, 24
     pop rbp
     ret
 end_function_myAddingFunction:
@@ -1949,7 +1949,7 @@ end_function_myAddingFunction:
 function_approxCircleArea:
     push rbp
     mov rbp, rsp
-    sub rsp, 1000 ; TODO replace with calculated value
+    sub rsp, 32
     ; 0
     mov rcx, 0
     ; =
@@ -1983,11 +1983,11 @@ function_approxCircleArea:
     mov rcx, [rbp-8]
     ; gift
     mov rax, rcx
-    add rsp, 1000 ; TODO replace with calculated value
+    add rsp, 32
     pop rbp
     ret
     ; prepare to exit function
-    add rsp, 1000 ; TODO replace with calculated value
+    add rsp, 32
     pop rbp
     ret
 end_function_approxCircleArea:
@@ -2020,7 +2020,7 @@ end_function_approxCircleArea:
 function_cylinderVolume:
     push rbp
     mov rbp, rsp
-    sub rsp, 1000 ; TODO replace with calculated value
+    sub rsp, 40
     ; 0
     mov rcx, 0
     ; =
@@ -2039,11 +2039,11 @@ function_cylinderVolume:
     mov rcx, [rbp-8]
     ; gift
     mov rax, rcx
-    add rsp, 1000 ; TODO replace with calculated value
+    add rsp, 40
     pop rbp
     ret
     ; prepare to exit function
-    add rsp, 1000 ; TODO replace with calculated value
+    add rsp, 40
     pop rbp
     ret
 end_function_cylinderVolume:
@@ -2123,7 +2123,7 @@ end_function_cylinderVolume:
     call printInt
 
 exit:
-    add     rsp, 1000 ; TODO replace with calculated value
+    add rsp, 744
     mov rax, 60
     xor rdi, rdi
     syscall

@@ -182,12 +182,12 @@ printInt:
 main:
 	push	rbp
 	mov	    rbp, rsp
-    sub     rsp, 1000 ; TODO replace with calculated value
+    sub     rsp, !!main rsp offset!!
 """
 
 ASM_TAIL = """
 exit:
-    add     rsp, 1000 ; TODO replace with calculated value
+    add rsp, !!main rsp offset!!
     mov rax, 60
     xor rdi, rdi
     syscall
@@ -476,13 +476,13 @@ def compile(file)->str|None:
 
                     if end_label.startswith("end_function"):
                         table = main_table
-                        print("hi1")
-                        local_table.clear()
-                        print("hi2")
                         asm += "    ; prepare to exit function\n"
-                        asm += "    add rsp, 1000 ; TODO replace with calculated value\n"
+                        asm += "    add rsp, "+str(local_table.get_rsp_offset())+"\n"
                         asm += "    pop rbp\n"
                         asm += "    ret\n"
+                        function_name = end_label.replace("end_function_", "", 1)
+                        asm = asm.replace("!!function "+function_name+" rsp!!", str(local_table.get_rsp_offset()))
+                        local_table.clear()
 
                     asm += end_label+":\n"
 
@@ -566,8 +566,6 @@ def compile(file)->str|None:
                         break
 
                     asm += "    ; print\n"
-                    # TODO ??????????????????????????????????????????????????????
-                    # asm += "    sub rsp, "+str(expr_stack.rsp_needed()*2)+"\n"
                     if a_type == VarType.NUM:
                         asm += "    mov rax, "+a+"\n"
                         asm += "    call printInt\n"
@@ -601,7 +599,7 @@ def compile(file)->str|None:
                     asm += "function_"+function_name+":\n"
                     asm += "    push rbp\n"
                     asm += "    mov rbp, rsp\n"
-                    asm += "    sub rsp, 1000 ; TODO replace with calculated value\n"
+                    asm += "    sub rsp, !!function "+function_name+" rsp!!\n"
                     table = local_table
 
                 if token == Terminal.KW_PARAM1:
@@ -630,7 +628,7 @@ def compile(file)->str|None:
                         error_free = False
                         break
                     asm += "    mov rax, "+a+"\n"
-                    asm += "    add rsp, 1000 ; TODO replace with calculated value\n"
+                    asm += "    add rsp, "+str(local_table.get_rsp_offset())+"\n"
                     asm += "    pop rbp\n"
                     asm += "    ret\n"
 
@@ -643,8 +641,9 @@ def compile(file)->str|None:
 
     asm += ASM_TAIL
 
+    asm = asm.replace("!!main rsp offset!!", str(main_table.get_rsp_offset()))
 
-    if True:#error_free:
+    if error_free:
         return asm
     return None
         

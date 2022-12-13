@@ -50,6 +50,7 @@ class SymbolTable:
 
     def __init__(self):
         self.table = [Scope(0)]
+        self.max_rsp_offset = 8
 
     def new_scope(self)->None:
         try:
@@ -70,6 +71,7 @@ class SymbolTable:
 
     # can raise AlreadyDefinedException
     def add_var(self, var_name: str, var_type: VarType) -> VariableInfo:
+        self.max_rsp_offset += 8
         return self.table[-1].add_var(var_name, var_type)
 
     def get_info(self, var_name:str) -> VariableInfo | None:
@@ -82,6 +84,9 @@ class SymbolTable:
     def top_of_stack(self) -> int:
         return self.table[-1].end_offset
     
+    def get_rsp_offset(self):
+        return self.max_rsp_offset
+
     def clear(self):
         self.table.clear()
         self.new_scope()
