@@ -202,7 +202,9 @@ def compile(file)->str|None:
 
     error_free = True
 
-    table = SymbolTable()
+    local_table = SymbolTable()
+    main_table = SymbolTable()
+    table = main_table
     function_list = []
     if_label_count = 0
     end_label_stack = []
@@ -473,6 +475,10 @@ def compile(file)->str|None:
                     end_label = end_label_stack.pop()
 
                     if end_label.startswith("end_function"):
+                        table = main_table
+                        print("hi1")
+                        local_table.clear()
+                        print("hi2")
                         asm += "    ; prepare to exit function\n"
                         asm += "    add rsp, 1000 ; TODO replace with calculated value\n"
                         asm += "    pop rbp\n"
@@ -596,6 +602,7 @@ def compile(file)->str|None:
                     asm += "    push rbp\n"
                     asm += "    mov rbp, rsp\n"
                     asm += "    sub rsp, 1000 ; TODO replace with calculated value\n"
+                    table = local_table
 
                 if token == Terminal.KW_PARAM1:
                     asm += "    ; param1 \n"

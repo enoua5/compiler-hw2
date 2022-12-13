@@ -82,5 +82,8 @@ class SymbolTable:
     def top_of_stack(self) -> int:
         return self.table[-1].end_offset
     
+    def clear(self):
+        self.table.clear()
+        self.new_scope()
 
     

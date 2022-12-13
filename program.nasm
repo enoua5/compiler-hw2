@@ -1848,9 +1848,9 @@ function_myFunction:
     ; 1234
     mov rcx, 1234
     ; =
-    mov qword[rbp-696], rcx
+    mov qword[rbp-8], rcx
     ; func1
-    mov rcx, [rbp-696]
+    mov rcx, [rbp-8]
     ; gift
     mov rax, rcx
     add rsp, 1000 ; TODO replace with calculated value
@@ -1899,9 +1899,9 @@ function_myAddingFunction:
     add rax, r13
     mov r10, rax
     ; =
-    mov qword[rbp-704], r10
+    mov qword[rbp-8], r10
     ; returnValue
-    mov rcx, [rbp-704]
+    mov rcx, [rbp-8]
     ; gift
     mov rax, rcx
     add rsp, 1000 ; TODO replace with calculated value
@@ -1953,7 +1953,7 @@ function_approxCircleArea:
     ; 0
     mov rcx, 0
     ; =
-    mov qword[rbp-712], rcx
+    mov qword[rbp-8], rcx
     ; 314
     mov rcx, 314
     ; param1 
@@ -1978,9 +1978,9 @@ function_approxCircleArea:
     idiv r15
     mov r14, rax
     ; =
-    mov qword[rbp-712], r14
+    mov qword[rbp-8], r14
     ; returnValue
-    mov rcx, [rbp-712]
+    mov rcx, [rbp-8]
     ; gift
     mov rax, rcx
     add rsp, 1000 ; TODO replace with calculated value
@@ -2024,7 +2024,7 @@ function_cylinderVolume:
     ; 0
     mov rcx, 0
     ; =
-    mov qword[rbp-720], rcx
+    mov qword[rbp-8], rcx
     ; param1 
     ; param2 
     ; *
@@ -2034,9 +2034,9 @@ function_cylinderVolume:
     imul eax, edx
     mov r14, rax
     ; =
-    mov qword[rbp-720], r14
+    mov qword[rbp-8], r14
     ; returnValue
-    mov rcx, [rbp-720]
+    mov rcx, [rbp-8]
     ; gift
     mov rax, rcx
     add rsp, 1000 ; TODO replace with calculated value
