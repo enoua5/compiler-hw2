@@ -58,8 +58,7 @@ class RegStack:
         if len(CALC_REGISTER_ORDER) > self.num_stack_length:
             place = CALC_REGISTER_ORDER[self.num_stack_length]
         else:
-            # TODO this is incorrect
-            place = "[rbp-"+str(self.real_stack_base + self.nums_on_real_stack + self.flums_on_real_stack + 1)+"]"
+            place = "[rsp-"+str((self.real_stack_base + self.nums_on_real_stack + self.flums_on_real_stack + 1)*8)+"]"
             self.nums_on_real_stack += 1
 
         self.locations_used.append(place)
@@ -71,8 +70,7 @@ class RegStack:
         if len(FLUM_REGISTER_ORDER) > self.flum_stack_length:
             place = FLUM_REGISTER_ORDER[self.flum_stack_length]
         else:
-            # TODO this is incorrect
-            place = "[rbp-"+str(self.real_stack_base + self.nums_on_real_stack + self.flums_on_real_stack + 1)+"]"
+            place = "[rsp-"+str(8*(self.real_stack_base + self.nums_on_real_stack + self.flums_on_real_stack + 1))+"]"
             self.nums_on_real_stack += 1
 
         self.locations_used.append(place)
